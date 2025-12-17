@@ -330,14 +330,32 @@ class _SavedContactItemState extends State<SavedContactItem> {
                           fontFamily: 'PolySans',
                         ),
                       ),
-                      Text(
-                        contact.ageRange,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.textGray,
-                          fontFamily: 'PolySans',
-                        ),
+                      Row(
+                        children: [
+                          if (contact.gender.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: Image.asset(
+                                contact.gender.toLowerCase() == 'male'
+                                    ? 'assets/images/male.png'
+                                    : 'assets/images/female.png',
+                                width: 20,
+                                height: 20,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return SizedBox.shrink();
+                                },
+                              ),
+                            ),
+                          Text(
+                            contact.ageRange,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.textGray,
+                              fontFamily: 'PolySans',
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

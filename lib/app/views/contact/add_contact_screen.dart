@@ -13,7 +13,6 @@ class _AddContactScreenState extends State<AddContactScreen> {
   DateTime? selectedDate;
   final TextEditingController _meetingPlaceController = TextEditingController(text: 'Paris, Restaurant');
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   
@@ -21,6 +20,8 @@ class _AddContactScreenState extends State<AddContactScreen> {
   Set<String> selectedCharacteristics = {'Ambitious'};
   String? selectedAgeRange = '10 - 20';
   Set<String> selectedIndustries = {'Healthcare'};
+  String? selectedGender;
+  String? selectedEthnicity;
   
   // Edit states
   bool _isEditingMeetingPlace = false;
@@ -346,10 +347,16 @@ class _AddContactScreenState extends State<AddContactScreen> {
                       ),
                       SizedBox(height: 15),
                       
-                      // Gender field
-                      _buildInputField(
-                        controller: _genderController,
+                      // Gender dropdown
+                      _buildDropdownField(
                         label: 'Gender',
+                        value: selectedGender,
+                        items: ['Male', 'Female'],
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -407,41 +414,16 @@ class _AddContactScreenState extends State<AddContactScreen> {
                 ),
                 SizedBox(height: 15),
                 
-                // Ethnicity Search
-                Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    border: Border.all(color: AppColors.borderLightGray),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Icon(
-                          Icons.search,
-                          color: AppColors.textGray,
-                          size: 20,
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Search',
-                              hintStyle: TextStyle(
-                                color: AppColors.mediumGray,
-                                fontFamily: 'PolySans',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                // Ethnicity dropdown
+                _buildDropdownField(
+                  label: 'Ethnicity',
+                  value: selectedEthnicity,
+                  items: _getEthnicityList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedEthnicity = value;
+                    });
+                  },
                 ),
                 
                 SizedBox(height: 30),
@@ -654,6 +636,69 @@ class _AddContactScreenState extends State<AddContactScreen> {
     );
   }
 
+  Widget _buildDropdownField({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: AppColors.backgroundLightGray,
+        border: Border.all(color: AppColors.borderLightGray),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isExpanded: true,
+          hint: Text(
+            label,
+            style: TextStyle(
+              color: AppColors.mediumGray,
+              fontFamily: 'PolySans',
+            ),
+          ),
+          style: TextStyle(
+            color: AppColors.black,
+            fontSize: 16,
+            fontFamily: 'PolySans',
+          ),
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: AppColors.textGray,
+          ),
+          items: items.map((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item),
+            );
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  List<String> _getEthnicityList() {
+    return [
+      'White Catholic',
+      'Latino',
+      'Hispanic',
+      'African American',
+      'Black',
+      'Asian',
+      'Native American',
+      'Pacific Islander',
+      'Middle Eastern',
+      'White',
+      'Mixed Race',
+      'Other',
+    ];
+  }
+
   Widget _buildCharacteristicsChips() {
     List<String> characteristics = [
       'Ambitious',
@@ -805,7 +850,6 @@ class _AddContactScreenState extends State<AddContactScreen> {
   void dispose() {
     _meetingPlaceController.dispose();
     _nameController.dispose();
-    _genderController.dispose();
     _companyNameController.dispose();
     _descriptionController.dispose();
     _meetingPlaceFocusNode.dispose();
