@@ -17,39 +17,11 @@ class SearchScreen extends GetView<app.AppSearchController> {
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             CustomAppBar(
-              appBarContent: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 0, right: 0, bottom: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                  // Back button
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     if (Navigator.canPop(context)) {
-                  //       Navigator.pop(context);
-                  //     }
-                  //   },
-                  //   child: Container(
-                  //     width: 40,
-                  //     height: 40,
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.white,
-                  //       shape: BoxShape.circle,
-                  //     ),
-                  //     child: Center(
-                  //       child: Icon(
-                  //         Icons.arrow_back,
-                  //         color: Colors.grey[800],
-                  //         size: 20,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // Title
-                  Expanded(
-                    child: Center(
+              appBarContent: Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+                child: Stack(
+                  children: [
+                    Center(
                       child: Text(
                         'Search',
                         style: TextStyle(
@@ -60,29 +32,33 @@ class SearchScreen extends GetView<app.AppSearchController> {
                         ),
                       ),
                     ),
-                  ),
-                  // Filter icon
-                  GestureDetector(
-                    onTap: () => controller.showFilterModal(),
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        // color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
                       child: Center(
-                        child: Image.asset(
-                          'assets/images/filter_btn.png',
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
+                        child: GestureDetector(
+                          onTap: () => controller.showFilterModal(),
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              // color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                'assets/images/filter_btn.png',
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
               backgroundColor: AppColors.primaryBlue,

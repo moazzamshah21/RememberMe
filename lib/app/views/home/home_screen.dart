@@ -231,6 +231,7 @@
 // }
 
 // screens/home_screen.dart
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
 import 'package:rememberme/app/data/contacts_data.dart';
@@ -283,6 +284,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  SizedBox(height: defaultTargetPlatform == TargetPlatform.iOS ? 20 : 0),
                 ],
               ),
               backgroundColor: AppColors.primaryBlue,

@@ -21,54 +21,21 @@ class FavoritesScreen extends GetView<FavoritesController> {
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             CustomAppBar(
-              appBarContent: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 0, right: 0, bottom: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Back button (commented out like in search screen)
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     if (Navigator.canPop(context)) {
-                      //       Navigator.pop(context);
-                      //     }
-                      //   },
-                      //   child: Container(
-                      //     width: 40,
-                      //     height: 40,
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.white,
-                      //       shape: BoxShape.circle,
-                      //     ),
-                      //     child: Center(
-                      //       child: Icon(
-                      //         Icons.arrow_back,
-                      //         color: Colors.grey[800],
-                      //         size: 20,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      // Title
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'Favorites',
-                            style: TextStyle(
-                              color: AppColors.primaryTeal,
-                              fontSize: 32,
-                              fontFamily: 'PolySans',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+              appBarContent: Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Text(
+                      'Favorites',
+                      style: TextStyle(
+                        color: AppColors.primaryTeal,
+                        fontSize: 32,
+                        fontFamily: 'PolySans',
+                        fontWeight: FontWeight.w600,
                       ),
-                      // Spacer to balance the layout (no filter icon needed for favorites)
-                      SizedBox(width: 50),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               backgroundColor: AppColors.primaryBlue,

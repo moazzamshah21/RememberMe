@@ -15,54 +15,21 @@ class SettingsScreen extends GetView<SettingsController> {
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             CustomAppBar(
-              appBarContent: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 20, right: 0, bottom: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Back button
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     if (Navigator.canPop(context)) {
-                      //       Navigator.pop(context);
-                      //     }
-                      //   },
-                      //   child: Container(
-                      //     width: 40,
-                      //     height: 40,
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.white,
-                      //       shape: BoxShape.circle,
-                      //     ),
-                      //     child: Center(
-                      //       child: Icon(
-                      //         Icons.arrow_back,
-                      //         color: Colors.grey[800],
-                      //         size: 20,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      // Title
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'Settings',
-                            style: TextStyle(
-                              color: AppColors.primaryTeal,
-                              fontSize: 32,
-                              fontFamily: 'PolySans',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+              appBarContent: Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Text(
+                      'Settings',
+                      style: TextStyle(
+                        color: AppColors.primaryTeal,
+                        fontSize: 32,
+                        fontFamily: 'PolySans',
+                        fontWeight: FontWeight.w600,
                       ),
-                      // Spacer to balance
-                      SizedBox(width: 40),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               backgroundColor: AppColors.primaryBlue,

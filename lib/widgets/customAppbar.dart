@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
 
@@ -35,6 +36,9 @@ class _CustomAppBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     final isCollapsed = shrinkOffset > maxExtent - minExtent;
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final double topPadding = mediaQuery.padding.top;
+    final bool isIOS = defaultTargetPlatform == TargetPlatform.iOS;
     
     return Container(
       decoration: BoxDecoration(
@@ -51,41 +55,71 @@ class _CustomAppBarDelegate extends SliverPersistentHeaderDelegate {
           ),
         ],
       ),
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: isCollapsed ? 60 : 30,
-          left: 40,
-          right: 40,
-          bottom: isCollapsed ? 30 : 30,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(60),
+          bottomRight: Radius.circular(60),
         ),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: isCollapsed
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Remember Me',
-                      style: TextStyle(
-                        color: AppColors.primaryTealAlt,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'PolySans',
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: topPadding + (isCollapsed ? 10 : 10),
+            left: 40,
+            right: 40,
+            bottom: isCollapsed ? 30 : (isIOS ? 5 : 30),
+          ),
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: isCollapsed
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Remember Me',
+                          style: TextStyle(
+                            color: AppColors.primaryTealAlt,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'PolySans',
+                          ),
+                        ),
+                      ],
+                    )
+                  : SizedBox(
+                      height: isIOS 
+                          ? maxExtent - topPadding - 10 - 5
+                          : maxExtent - topPadding - 10 - 30,
+                      child: ClipRect(
+                        child: appBarContent,
                       ),
                     ),
-                  ],
-                )
-              : appBarContent,
+            ),
+          ),
         ),
       ),
     );
   }
 
   @override
-  double get maxExtent => 150.0;
+  double get maxExtent {
+    // Increase height on iOS to accommodate safe area and prevent overflow
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return 171.0; // 150 + 21 pixels to fix overflow
+    }
+    return 150.0;
+  }
 
   @override
-  double get minExtent => 150.0;
+  double get minExtent {
+    // Increase height on iOS to accommodate safe area and prevent overflow
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return 171.0; // 150 + 21 pixels to fix overflow
+    }
+    return 150.0;
+  }
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
