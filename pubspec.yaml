@@ -1,0 +1,109 @@
+name: rememberme
+description: The Smart Way to Remember People."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  cupertino_icons: ^1.0.8
+  floating_bottom_bar: ^0.0.3
+  get: ^4.6.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  uses-material-design: true
+
+  assets:
+      - assets/images/
+      # - assets/fonts
+
+# Futuru Font Family
+  fonts:
+    # Futuru Black
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Black.otf
+          weight: 900
+    
+    # Futuru Bold
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Bold.otf
+          weight: 700
+    
+    # Futuru ExtraBold
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Extrabold.otf
+          weight: 800
+    
+    # Futuru ExtraLight
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Extralight.otf
+          weight: 200
+    
+    # Futuru Light
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Light.otf
+          weight: 300
+    
+    # Futuru Medium
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Medium.otf
+          weight: 500
+    
+    # Futuru Regular
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Regular.otf
+          weight: 400
+    
+    # Futuru SemiBold
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Semibold.otf
+          weight: 600
+    
+    # Futuru Thin
+    - family: Futuru
+      fonts:
+        - asset: assets/fonts/Futuru-Thin.otf
+          weight: 100
+
+# Inter Variable Font (Regular)
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter-VariableFont_opsz,wght.ttf
+          weight: 100  # You can specify a default weight
+
+ # ===== PolySans Fonts =====
+    # PolySans Neutral (likely the regular/default)
+    - family: PolySans
+      fonts:
+        - asset: assets/fonts/PolySans-Neutral.ttf
+          weight: 400
+        - asset: assets/fonts/PolySans-Median.ttf
+          weight: 500
+        - asset: assets/fonts/PolySans-Slim.ttf
+          weight: 300
+        - asset: assets/fonts/PolySans-Bulky.ttf
+          weight: 700
