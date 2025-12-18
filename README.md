@@ -1,16 +1,7 @@
-# rememberme
+  <h1>RememberMe App Documentation</h1>
 
-A new Flutter project.
+  <p>RememberMe is a contact management app that helps you remember details about people you meet. It stores detailed profiles including profession, age range, location, company, personal characteristics, ethnicity, industry, and notes. Contacts are organized by time periods (Recently Added, Yesterday, Last 7 Days) to help you recall when you met them.</p>
 
-## Getting Started
+  <p>The app includes search and filtering, a favorites system, and detailed contact views. Users can add new contacts with comprehensive information, mark favorites, and filter by profession, ethnicity, or other attributes. The home screen displays contacts grouped by when they were added.</p>
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  <p>The app includes user authentication (login/register), a settings screen, and a bottom navigation bar for Home, Search, Favorites, and Settings. It's built with Flutter and uses the GetX state management library for navigation and data handling.</p>
