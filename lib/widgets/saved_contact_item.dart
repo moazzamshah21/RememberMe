@@ -211,6 +211,14 @@ class _SavedContactItemState extends State<SavedContactItem> {
   }
 
   @override
+  void didUpdateWidget(SavedContactItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.contact.id != oldWidget.contact.id) {
+      contact = widget.contact;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {

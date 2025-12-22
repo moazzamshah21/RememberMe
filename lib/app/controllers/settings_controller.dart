@@ -11,7 +11,10 @@ import 'package:rememberme/app/controllers/user_controller.dart';
 import 'package:rememberme/app/controllers/contacts_controller.dart';
 import 'package:rememberme/app/controllers/favorites_controller.dart';
 import 'package:rememberme/app/controllers/search_controller.dart' as app;
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rememberme/app/models/contact_model.dart';
+import 'package:rememberme/app/constants/app_colors.dart';
 
 class SettingsController extends GetxController {
   // Current plan
@@ -27,12 +30,27 @@ class SettingsController extends GetxController {
 
   // Settings state
   final RxBool isLoading = false.obs;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  StreamSubscription<DocumentSnapshot>? _subscriptionListener;
 
   @override
   void onInit() {
     super.onInit();
     // Initialize any settings data here
     loadSettings();
+    _setupAuthListener();
+  }
+
+  void _setupAuthListener() {
+    _auth.authStateChanges().listen((User? user) {
+      if (user != null) {
+        _loadUserSubscription();
+      } else {
+        _subscriptionListener?.cancel();
+        currentPlan.value = 'Free';
+      }
+    });
   }
 
   void loadSettings() {
@@ -40,18 +58,66 @@ class SettingsController extends GetxController {
     // For now, keeping default values
   }
 
-  void upgradePlan(String planName) {
+  void _loadUserSubscription() {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      _subscriptionListener?.cancel();
+      _subscriptionListener = _firestore.collection('users').doc(user.uid).snapshots().listen((snapshot) {
+        if (snapshot.exists) {
+          final data = snapshot.data() as Map<String, dynamic>?;
+          if (data != null && data.containsKey('subscriptionPlan')) {
+            currentPlan.value = data['subscriptionPlan'];
+          }
+        }
+      });
+    }
+  }
+
+  Future<void> upgradePlan(String planName) async {
+    final User? user = _auth.currentUser;
+    if (user == null) {
+      Get.snackbar(
+        'Error',
+        'You must be logged in to upgrade plan',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     isLoading.value = true;
-    // Simulate upgrade process
-    Future.delayed(const Duration(seconds: 1), () {
+    
+    try {
+      // Simulate purchase delay
+      await Future.delayed(const Duration(seconds: 1));
+      
+      // Update user subscription in Firestore
+      await _firestore.collection('users').doc(user.uid).set({
+        'subscriptionPlan': planName,
+        'subscriptionDate': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
       currentPlan.value = planName;
       isLoading.value = false;
+      
       Get.snackbar(
         'Success',
-        'Plan upgraded to $planName',
+        'Plan upgraded to $planName. All premium features are now unlocked!',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
       );
-    });
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar(
+        'Error',
+        'Failed to upgrade plan: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+    }
   }
 
   void handlePrivacySecurity() {
@@ -64,6 +130,12 @@ class SettingsController extends GetxController {
   }
 
   Future<void> handleExportData() async {
+    // Check if user has a subscription (not Free plan)
+    if (currentPlan.value == 'Free') {
+      _showExportSubscriptionPopup();
+      return;
+    }
+    
     try {
       isLoading.value = true;
       
@@ -113,6 +185,83 @@ class SettingsController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     }
+  }
+  
+  // Show subscription popup for export data feature
+  void _showExportSubscriptionPopup() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.info_outline,
+              color: AppColors.primaryTeal,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Subscription Required',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryBlue,
+                  fontFamily: 'PolySans',
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Export Data is a premium feature. Subscribe to any plan (Pro, Premium, or Platinum) to export your contacts.',
+          style: TextStyle(
+            fontSize: 16,
+            color: AppColors.mediumGray,
+            fontFamily: 'PolySans',
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: AppColors.mediumGray,
+                fontFamily: 'PolySans',
+                fontSize: 16,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back(); // Close the dialog
+              // The user is already on the Settings screen, so they can see the plans below
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryTeal,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: Text(
+              'View Plans',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'PolySans',
+              ),
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
   }
   
   Future<pw.Document> _generateContactsPDF(List<Contact> contacts) async {

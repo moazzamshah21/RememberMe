@@ -153,18 +153,6 @@ class ContactsController extends GetxController {
     // Format industries
     final industriesString = industries.join(', ');
     
-    // Handle images - support both old profileImageUrl and new imageUrls array
-    final profileImageUrl = data['profileImageUrl'] as String? ?? '';
-    final imageUrlsData = data['imageUrls'] as List<dynamic>?;
-    List<String> imageUrls = [];
-    
-    if (imageUrlsData != null && imageUrlsData.isNotEmpty) {
-      imageUrls = imageUrlsData.map((e) => e.toString()).toList();
-    } else if (profileImageUrl.isNotEmpty) {
-      // Migrate from old single image to new array format
-      imageUrls = [profileImageUrl];
-    }
-    
     return Contact(
       id: id,
       timePeriod: timePeriod,
@@ -176,12 +164,11 @@ class ContactsController extends GetxController {
       isFavorite: data['isFavorite'] as bool? ?? false,
       notes: data['description'] as String? ?? '',
       company: data['companyName'] as String? ?? '',
-      gender: (data['gender'] as String? ?? '').trim(),
+      gender: data['gender'] as String? ?? '',
       characteristics: characteristics,
       ethnicity: data['ethnicity'] as String? ?? '',
       industry: industriesString,
-      profileImageUrl: profileImageUrl,
-      imageUrls: imageUrls,
+      profileImageUrl: data['profileImageUrl'] as String? ?? '',
     );
   }
   

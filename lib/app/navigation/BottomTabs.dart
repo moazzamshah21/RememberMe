@@ -24,6 +24,7 @@ class BottomTabs extends GetView<BottomTabsController> {
   Widget build(BuildContext context) {
     final tabItems = _getTabItems();
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // Display the selected screen - only wrap the body that changes
       body: Obx(() => tabItems[controller.selectedIndex.value]['screen'] as Widget),
       

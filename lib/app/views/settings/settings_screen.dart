@@ -244,6 +244,19 @@ class SettingsScreen extends GetView<SettingsController> {
         ),
       ),
     );
+    }
+
+  IconData _getPlanIcon(String plan) {
+    switch (plan) {
+      case 'Pro':
+        return Icons.bolt;
+      case 'Premium':
+      case 'Platinum':
+        return Icons.workspace_premium;
+      case 'Free':
+      default:
+        return Icons.shield_outlined;
+    }
   }
 
   Widget _buildGeneralItem({
@@ -322,7 +335,7 @@ class SettingsScreen extends GetView<SettingsController> {
       ),
       child: Row(
         children: [
-          // Shield icon with light gray circular background
+          // Icon with light gray circular background
           Container(
             width: 50,
             height: 50,
@@ -331,7 +344,7 @@ class SettingsScreen extends GetView<SettingsController> {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.shield_outlined,
+              _getPlanIcon(controller.currentPlan.value),
               color: Colors.grey[800],
               size: 24,
             ),
