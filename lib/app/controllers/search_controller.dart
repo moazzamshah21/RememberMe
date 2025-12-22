@@ -127,15 +127,12 @@ class AppSearchController extends GetxController {
       print('SearchController: Filtered contacts count: ${newContacts.length}');
       print('SearchController: Filtered contact names: ${newContacts.take(10).map((c) => c.name).toList()}');
       
-      // Clear and add all contacts to ensure proper reactivity
-      // This ensures GetX detects the change and updates the UI
-      filteredContacts.clear();
-      filteredContacts.addAll(newContacts);
-      
-      // Force refresh to ensure UI updates
-      filteredContacts.refresh();
+      // Use assignAll to replace the entire list - this is the proper way for RxList
+      // assignAll ensures GetX detects the change and updates the UI correctly
+      filteredContacts.assignAll(newContacts);
       
       print('SearchController: Filtered contacts updated successfully. List now has ${filteredContacts.length} items');
+      print('SearchController: Verified filtered contacts in RxList: ${filteredContacts.map((c) => c.name).toList()}');
     } catch (e, stackTrace) {
       print('Error updating filtered contacts: $e');
       print('Stack trace: $stackTrace');
@@ -364,8 +361,13 @@ class AppSearchController extends GetxController {
     List<Contact> contacts = [];
     if (Get.isRegistered<ContactsController>()) {
       final contactsController = Get.find<ContactsController>();
-      // Create a fresh copy of the contacts list
-      contacts = List<Contact>.from(contactsController.contacts);
+      // Create a fresh copy of the contacts list - ensure we get all contacts
+      // Access the RxList directly and convert to a regular list
+      final allContactsFromController = contactsController.contacts;
+      // Explicitly convert to list to ensure we get all items
+      contacts = allContactsFromController.toList();
+      print('SearchController: Retrieved ${allContactsFromController.length} contacts from ContactsController');
+      print('SearchController: Contacts list type: ${allContactsFromController.runtimeType}');
     }
     
     // If no contacts, return empty list
@@ -375,6 +377,7 @@ class AppSearchController extends GetxController {
     }
     
     print('SearchController: Starting with ${contacts.length} contacts');
+    print('SearchController: All contact names: ${contacts.map((c) => c.name).toList()}');
     
     // Get current filter values (explicitly check for null/empty)
     final filterTag = selectedFilterTag.value;
@@ -416,23 +419,18 @@ class AppSearchController extends GetxController {
         }
       }
       
+      final originalContacts = List<Contact>.from(contacts);
       contacts = contacts.where((contact) {
         final contactGender = contact.gender.trim();
         
         // Handle empty gender - skip contacts with empty gender when filtering
         if (contactGender.isEmpty) {
-          print('SearchController: Contact ${contact.name} has empty gender, excluding from filter');
           return false;
         }
         
         // Case-insensitive exact match
         final contactGenderLower = contactGender.toLowerCase();
         final matches = contactGenderLower == genderFilter;
-        
-        // Debug for first few contacts
-        if (contacts.indexOf(contact) < 5) {
-          print('SearchController: Contact ${contact.name} - gender: "$contactGender" (lower: "$contactGenderLower") vs filter: "$genderFilter" -> $matches');
-        }
         
         return matches;
       }).toList();
@@ -499,7 +497,11 @@ class AppSearchController extends GetxController {
     
     print('SearchController: Final filtered contacts: ${contacts.length}');
     if (contacts.isNotEmpty) {
+      print('SearchController: All filtered contact names: ${contacts.map((c) => c.name).toList()}');
       print('SearchController: First contact: ${contacts.first.name}');
+    } else {
+      print('SearchController: WARNING - No contacts match the applied filters!');
+      print('SearchController: Applied filters - Tag: $filterTag, Gender: $filterGender, Ethnicity: $filterEthnicity, Industry: $filterIndustry, Query: $query');
     }
 
     return contacts;
