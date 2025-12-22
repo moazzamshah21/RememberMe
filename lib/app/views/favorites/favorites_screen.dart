@@ -10,10 +10,8 @@ class FavoritesScreen extends GetView<FavoritesController> {
 
   @override
   Widget build(BuildContext context) {
-    // Refresh favorites when screen is built (when user navigates to this tab)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.loadFavoriteContacts();
-    });
+    // Real-time updates are handled automatically via FavoritesController's ever() listener
+    // No need to manually refresh here
     
     return Scaffold(
       backgroundColor: AppColors.white,

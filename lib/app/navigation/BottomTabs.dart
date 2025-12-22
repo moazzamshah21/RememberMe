@@ -71,36 +71,45 @@ class BottomTabs extends GetView<BottomTabsController> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
-        notchMargin: -50,
-        elevation: 10,
+        notchMargin: -40,
+        elevation: 5,
+        height: 80,
         color: const Color(0xFF025786),
-        child: SizedBox(
-          height: 70,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Left side - Home and Favorites
-              Row(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenWidth = MediaQuery.of(context).size.width;
+            final spacing = screenWidth * 0.1; // Responsive spacing (8% of screen width)
+            final edgePadding = screenWidth * 0.03; // Responsive edge padding (2% of screen width)
+            
+            return SizedBox(
+              height: 50,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(width: 20), // Space from left edge
-                  _buildTabButton(context, 0, tabItems), // Home
-                  const SizedBox(width: 40), // Space between Home and Favorites
-                  _buildTabButton(context, 1, tabItems), // Favorites
+                  // Left side - Home and Favorites
+                  Row(
+                    children: [
+                      SizedBox(width: edgePadding),
+                      _buildTabButton(context, 0, tabItems), // Home
+                      SizedBox(width: spacing),
+                      _buildTabButton(context, 1, tabItems), // Favorites
+                    ],
+                  ),
+                  
+                  // Right side - Search and Settings
+                  Row(
+                    children: [
+                      _buildTabButton(context, 2, tabItems), // Search
+                      SizedBox(width: spacing),
+                      _buildTabButton(context, 3, tabItems), // Settings
+                      SizedBox(width: edgePadding),
+                    ],
+                  ),
                 ],
               ),
-              
-              // Right side - Search and Settings
-              Row(
-                children: [
-                  _buildTabButton(context, 2, tabItems), // Search
-                  const SizedBox(width: 40), // Space between Search and Settings
-                  _buildTabButton(context, 3, tabItems), // Settings
-                  const SizedBox(width: 20), // Space from right edge
-                ],
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -115,20 +124,21 @@ class BottomTabs extends GetView<BottomTabsController> {
           controller.changeTab(index);
         },
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               tabItems[index]['icon'] as IconData,
               color: isSelected ? AppColors.primaryTeal : AppColors.white,
-              size: 28,
+              size: 22,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               tabItems[index]['label'] as String,
               style: TextStyle(
                 fontFamily: 'PolySans',
                 color: isSelected ? AppColors.primaryTeal : AppColors.white,
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w300,
               ),
             ),

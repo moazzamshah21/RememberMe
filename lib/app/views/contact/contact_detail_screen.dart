@@ -1,6 +1,7 @@
 // screens/contact_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
 import 'package:rememberme/app/controllers/contact_detail_controller.dart';
 import 'package:rememberme/app/models/contact_model.dart';
@@ -18,7 +19,7 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
     // Initialize controller with contact - use a unique tag per contact
     final tag = contact.id.toString();
     final controller = Get.put(ContactDetailController(), tag: tag);
-    // Always set the contact to ensure it's up to date
+    // Always set the contact to ensure it's up to date (this will also set profile images)
     if (controller.contact == null || controller.contact!.id != contact.id) {
       controller.setContact(contact);
     }
@@ -44,70 +45,182 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
                         ),
                         child: SizedBox(
                           height: 400,
-                          child: PageView.builder(
-                            controller: controller.pageController,
-                            itemCount: controller.profileImages.length,
-                            onPageChanged: controller.changeImageIndex,
-                            itemBuilder: (context, index) {
+                          child: Obx(() {
+                            final ctrl = Get.find<ContactDetailController>(tag: tag);
+                            final images = ctrl.profileImages;
+                            final contactName = ctrl.contact?.name ?? contact.name;
+                            
+                            if (images.isEmpty || (images.length == 1 && images.first == 'assets/images/profilepic.png')) {
                               return Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 1),
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.only(
-                                    bottomLeft: Radius.circular(30),
-                                    bottomRight: Radius.circular(30),
-                                  ),
-                                  child: Image.asset(
-                                    controller.profileImages[index],
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        color: AppColors.primaryBlue,
-                                        child: Center(
-                                          child: Text(
-                                            contact.name.split(' ').map((n) => n[0]).join(),
-                                            style: const TextStyle(
-                                              color: AppColors.white,
-                                              fontSize: 48,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                color: AppColors.primaryBlue,
+                                child: Center(
+                                  child: Text(
+                                    contactName.split(' ').map((n) => n.isNotEmpty ? n[0] : '').join().toUpperCase(),
+                                    style: const TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 48,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               );
-                            },
-                          ),
+                            }
+                            
+                            return PageView.builder(
+                              controller: ctrl.pageController,
+                              itemCount: images.length,
+                              onPageChanged: ctrl.changeImageIndex,
+                              itemBuilder: (context, index) {
+                                final imageUrl = images[index];
+                                final isNetworkImage = imageUrl.startsWith('http://') || imageUrl.startsWith('https://');
+                                
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 1),
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(30),
+                                      bottomRight: Radius.circular(30),
+                                    ),
+                                    child: isNetworkImage
+                                        ? Image.network(
+                                            imageUrl,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            loadingBuilder: (context, child, loadingProgress) {
+                                              if (loadingProgress == null) return child;
+                                              return Container(
+                                                color: AppColors.primaryBlue,
+                                                child: Center(
+                                                  child: CircularProgressIndicator(
+                                                    value: loadingProgress.expectedTotalBytes != null
+                                                        ? loadingProgress.cumulativeBytesLoaded /
+                                                            loadingProgress.expectedTotalBytes!
+                                                        : null,
+                                                    color: AppColors.white,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                color: AppColors.primaryBlue,
+                                                child: Center(
+                                                  child: Text(
+                                                    contactName.split(' ').map((n) => n.isNotEmpty ? n[0] : '').join().toUpperCase(),
+                                                    style: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: 48,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          )
+                                        : Image.asset(
+                                            imageUrl,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                color: AppColors.primaryBlue,
+                                                child: Center(
+                                                  child: Text(
+                                                    contactName.split(' ').map((n) => n.isNotEmpty ? n[0] : '').join().toUpperCase(),
+                                                    style: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: 48,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                  ),
+                                );
+                              },
+                            );
+                          }),
                         ),
                       ),
                       
-                      // Page indicators
+                      // Page indicators and Add Image button
                       Obx(() {
                         final ctrl = Get.find<ContactDetailController>(tag: tag);
-                        return Positioned(
-                          bottom: 20,
-                          left: 0,
-                          right: 0,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                              ctrl.profileImages.length,
-                              (index) => Container(
-                                width: 8,
-                                height: 8,
-                                margin: const EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: ctrl.currentImageIndex.value == index 
-                                      ? AppColors.white 
-                                      : AppColors.whiteWithOpacity(0.5),
+                        return Stack(
+                          children: [
+                            // Page indicators
+                            if (ctrl.profileImages.length > 1)
+                              Positioned(
+                                bottom: 80,
+                                left: 0,
+                                right: 0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    ctrl.profileImages.length,
+                                    (index) => Container(
+                                      width: 8,
+                                      height: 8,
+                                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: ctrl.currentImageIndex.value == index 
+                                            ? AppColors.white 
+                                            : AppColors.whiteWithOpacity(0.5),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            
+                            // Add Image button
+                            Positioned(
+                              bottom: 20,
+                              right: 20,
+                              child: GestureDetector(
+                                onTap: () => _showImageSourceDialog(context, tag),
+                                child: Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.shadowBlackHeavy,
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 6),
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Obx(() {
+                                    if (ctrl.isUploadingImage.value) {
+                                      return const Center(
+                                        child: SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return const Icon(
+                                      Icons.add_photo_alternate_outlined,
+                                      color: AppColors.primaryBlue,
+                                      size: 28,
+                                    );
+                                  }),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         );
                       }),
                     ],
@@ -124,77 +237,108 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Contact Name at top
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: Text(
-                          contact.name,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.black,
-                            fontFamily: 'PolySans',
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) => Padding(
+                          padding: const EdgeInsets.only(bottom: 30),
+                          child: Text(
+                            ctrl.contact?.name ?? contact.name,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.black,
+                              fontFamily: 'PolySans',
+                            ),
                           ),
                         ),
                       ),
                       
                       // Notes Section with Read More - Edit icon outside field
-                      Obx(() {
-                        // Only access observable variables directly in Obx
-                        final ctrl = Get.find<ContactDetailController>(tag: tag);
-                        final isExpanded = ctrl.isNotesExpanded.value;
-                        return _buildNotesFieldWithEdit(
-                          content: contact.notes,
-                          isExpanded: isExpanded,
-                          onExpandToggle: ctrl.toggleNotesExpansion,
-                        );
-                      }),
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) {
+                          return Obx(() {
+                            final isExpanded = ctrl.isNotesExpanded.value;
+                            return _buildNotesFieldWithEdit(
+                              content: ctrl.contact?.notes ?? contact.notes,
+                              isExpanded: isExpanded,
+                              onExpandToggle: ctrl.toggleNotesExpansion,
+                              onEdit: () => _showEditDialog(context, tag, 'notes', ctrl.contact?.notes ?? contact.notes, ctrl),
+                            );
+                          });
+                        },
+                      ),
                       
                       const SizedBox(height: 20),
                       
                       // Company
-                      _buildFieldWithEdit(
-                        title: "Company",
-                        content: contact.company,
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) => _buildFieldWithEdit(
+                          title: "Company",
+                          content: ctrl.contact?.company ?? contact.company,
+                          onEdit: () => _showEditDialog(context, tag, 'company', ctrl.contact?.company ?? contact.company, ctrl),
+                        ),
                       ),
                       
                       const SizedBox(height: 20),
                       
                       // Gender
-                      _buildFieldWithEdit(
-                        title: "Gender",
-                        content: contact.gender,
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) => _buildFieldWithEdit(
+                          title: "Gender",
+                          content: ctrl.contact?.gender ?? contact.gender,
+                          onEdit: () => _showEditDialog(context, tag, 'gender', ctrl.contact?.gender ?? contact.gender, ctrl),
+                        ),
                       ),
                       
                       const SizedBox(height: 20),
                       
                       // Age Range
-                      _buildFieldWithEdit(
-                        title: "Age Range",
-                        content: contact.ageRange,
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) => _buildFieldWithEdit(
+                          title: "Age Range",
+                          content: ctrl.contact?.ageRange ?? contact.ageRange,
+                          onEdit: () => _showEditDialog(context, tag, 'ageRange', ctrl.contact?.ageRange ?? contact.ageRange, ctrl),
+                        ),
                       ),
                       
                       const SizedBox(height: 20),
                       
                       // Characteristics
-                      _buildFieldWithEdit(
-                        title: "Characteristics",
-                        content: contact.characteristics,
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) => _buildFieldWithEdit(
+                          title: "Characteristics",
+                          content: ctrl.contact?.characteristics ?? contact.characteristics,
+                          onEdit: () => _showEditDialog(context, tag, 'characteristics', ctrl.contact?.characteristics ?? contact.characteristics, ctrl),
+                        ),
                       ),
                       
                       const SizedBox(height: 20),
                       
                       // Ethnicity
-                      _buildFieldWithEdit(
-                        title: "Ethnicity",
-                        content: contact.ethnicity,
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) => _buildFieldWithEdit(
+                          title: "Ethnicity",
+                          content: ctrl.contact?.ethnicity ?? contact.ethnicity,
+                          onEdit: () => _showEditDialog(context, tag, 'ethnicity', ctrl.contact?.ethnicity ?? contact.ethnicity, ctrl),
+                        ),
                       ),
                       
                       const SizedBox(height: 20),
                       
                       // Industry
-                      _buildFieldWithEdit(
-                        title: "Industry",
-                        content: contact.industry,
+                      GetBuilder<ContactDetailController>(
+                        tag: tag,
+                        builder: (ctrl) => _buildFieldWithEdit(
+                          title: "Industry",
+                          content: ctrl.contact?.industry ?? contact.industry,
+                          onEdit: () => _showEditDialog(context, tag, 'industry', ctrl.contact?.industry ?? contact.industry, ctrl),
+                        ),
                       ),
                       
                       // Bottom spacing for back button
@@ -283,64 +427,168 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
             ),
           ),
           
-          // Bottom Back Button
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: GestureDetector(
-              onTap: () {
-                Get.back();
-              },
-              child: Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: const LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      AppColors.lightBlue,
-                      AppColors.cyan,
+          // Bottom Share Button
+          GetBuilder<ContactDetailController>(
+            tag: tag,
+            builder: (ctrl) => Positioned(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              child: GestureDetector(
+                onTap: () {
+                  ctrl.shareContact();
+                },
+                child: Container(
+                  height: 56,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        AppColors.lightBlue,
+                        AppColors.cyan,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.shadowBlackHeavy,
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                        spreadRadius: 1,
+                      ),
                     ],
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.shadowBlackHeavy,
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: const Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Centered Text
-                    Text(
-                      "Back",
-                      style: TextStyle(
-                        color: AppColors.primaryBlue,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'PolySans',
-                        letterSpacing: 0.5,
+                  child: const Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Centered Text
+                      Text(
+                        "Share",
+                        style: TextStyle(
+                          color: AppColors.primaryBlue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'PolySans',
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                    
-                    // Icon at the start
-                    Positioned(
-                      left: 20,
-                      child: Icon(
-                        Icons.arrow_back_rounded,
-                        color: AppColors.primaryBlue,
-                        size: 24,
+                      
+                      // Icon at the start
+                      Positioned(
+                        left: 20,
+                        child: Icon(
+                          Icons.share_rounded,
+                          color: AppColors.primaryBlue,
+                          size: 24,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showImageSourceDialog(BuildContext context, String tag) {
+    final controller = Get.find<ContactDetailController>(tag: tag);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(Icons.photo_library, color: AppColors.primaryBlue),
+                title: const Text('Choose from Gallery (Multi-select)'),
+                subtitle: Obx(() {
+                  final ctrl = Get.find<ContactDetailController>(tag: tag);
+                  final currentCount = ctrl.profileImages.where((img) => 
+                    img != 'assets/images/profilepic.png' && 
+                    !img.startsWith('assets/')
+                  ).length;
+                  final remaining = ContactDetailController.maxImages - currentCount;
+                  return Text(
+                    remaining > 0 
+                        ? 'Select up to $remaining more image(s)'
+                        : 'Maximum ${ContactDetailController.maxImages} images reached',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textGray,
+                      fontFamily: 'PolySans',
+                    ),
+                  );
+                }),
+                onTap: () {
+                  Navigator.pop(context);
+                  controller.pickAndAddImage(source: ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: AppColors.primaryBlue),
+                title: const Text('Take Photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  controller.pickAndAddImage(source: ImageSource.camera);
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, String tag, String fieldName, String currentValue, ContactDetailController controller) {
+    final TextEditingController textController = TextEditingController(text: currentValue);
+    final String fieldTitle = fieldName[0].toUpperCase() + fieldName.substring(1);
+    
+    // For multi-value fields, show hint
+    final bool isMultiValue = fieldName == 'characteristics' || fieldName == 'industry';
+    final String hint = isMultiValue ? 'Separate values with commas' : '';
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Edit $fieldTitle'),
+        content: TextField(
+          controller: textController,
+          autofocus: true,
+          maxLines: fieldName == 'notes' ? 5 : (isMultiValue ? 3 : 1),
+          decoration: InputDecoration(
+            hintText: hint,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final newValue = textController.text.trim();
+              if (newValue.isNotEmpty) {
+                controller.updateField(fieldName, newValue);
+              }
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
           ),
         ],
       ),
@@ -352,6 +600,7 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
     required String content,
     bool isExpanded = false,
     VoidCallback? onExpandToggle,
+    VoidCallback? onEdit,
   }) {
     final displayText = !isExpanded && content.length > 150
         ? '${content.substring(0, 150)}...'
@@ -374,9 +623,7 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                // Handle edit for notes field
-              },
+              onTap: onEdit,
               child: Container(
                 width: 36,
                 height: 36,
@@ -465,6 +712,7 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
   Widget _buildFieldWithEdit({
     required String title,
     required String content,
+    VoidCallback? onEdit,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -513,9 +761,7 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
                 top: 9,
                 right: 12,
                 child: GestureDetector(
-                  onTap: () {
-                    // Handle edit for this field
-                  },
+                  onTap: onEdit,
                   child: Container(
                     width: 36,
                     height: 36,

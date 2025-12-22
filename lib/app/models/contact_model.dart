@@ -3,7 +3,7 @@ class Contact {
   final String id;
   final String timePeriod;
   final String profession;
-  final String ageRange;
+  String ageRange;
   final String name;
   final String location;
   final DateTime dateAdded;
@@ -14,6 +14,8 @@ class Contact {
   String characteristics;
   String ethnicity;
   String industry;
+  String profileImageUrl;
+  List<String> imageUrls;
 
   Contact({
     required this.id,
@@ -30,5 +32,7 @@ class Contact {
     this.characteristics = "Ambitious, Humble, Honest, Skillfull",
     this.ethnicity = "White Catholic",
     this.industry = "Health Care",
-  });
+    this.profileImageUrl = "",
+    List<String>? imageUrls,
+  }) : imageUrls = imageUrls ?? [];
 }

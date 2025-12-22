@@ -184,6 +184,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
+import 'package:rememberme/app/controllers/contacts_controller.dart';
 import 'package:rememberme/app/controllers/favorites_controller.dart';
 import 'package:rememberme/app/models/contact_model.dart';
 import 'package:rememberme/app/views/contact/contact_detail_screen.dart';
@@ -249,24 +250,54 @@ class _SavedContactItemState extends State<SavedContactItem> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      'assets/images/profilepic.png',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: const Color(0xFF025786),
-                          child: Center(
-                            child: Text(
-                              contact.name.split(' ').map((n) => n[0]).join(),
-                              style: const TextStyle(
-                                color: AppColors.white,
-                                fontWeight: FontWeight.bold,
+                    child: contact.profileImageUrl.isNotEmpty
+                        ? Image.network(
+                            contact.profileImageUrl,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                color: AppColors.lightGray,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: const Color(0xFF025786),
+                                child: Center(
+                                  child: Text(
+                                    contact.name.split(' ').map((n) => n.isNotEmpty ? n[0] : '').join().toUpperCase(),
+                                    style: const TextStyle(
+                                      color: AppColors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            color: const Color(0xFF025786),
+                            child: Center(
+                              child: Text(
+                                contact.name.split(' ').map((n) => n.isNotEmpty ? n[0] : '').join().toUpperCase(),
+                                style: const TextStyle(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24,
+                                ),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
                   ),
                 ),
                 // Favorite Icon positioned on top-right corner of profile pic
@@ -274,10 +305,18 @@ class _SavedContactItemState extends State<SavedContactItem> {
                   top: 0,
                   right: 0,
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      final newFavoriteStatus = !contact.isFavorite;
                       setState(() {
-                        contact.isFavorite = !contact.isFavorite;
+                        contact.isFavorite = newFavoriteStatus;
                       });
+                      
+                      // Update in Firebase
+                      if (Get.isRegistered<ContactsController>()) {
+                        final contactsController = Get.find<ContactsController>();
+                        await contactsController.toggleFavorite(contact.id, newFavoriteStatus);
+                      }
+                      
                       // Notify FavoritesController to refresh the list
                       if (Get.isRegistered<FavoritesController>()) {
                         Get.find<FavoritesController>().loadFavoriteContacts();

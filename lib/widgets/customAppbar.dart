@@ -63,7 +63,7 @@ class _CustomAppBarDelegate extends SliverPersistentHeaderDelegate {
         clipBehavior: Clip.antiAlias,
         child: Padding(
           padding: EdgeInsets.only(
-            top: topPadding + (isCollapsed ? 10 : 10),
+            top: topPadding + (isCollapsed ? 20 : 15),
             left: 40,
             right: 40,
             bottom: isCollapsed ? 30 : (isIOS ? 5 : 30),
@@ -72,7 +72,7 @@ class _CustomAppBarDelegate extends SliverPersistentHeaderDelegate {
             context: context,
             removeTop: true,
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 800),
               child: isCollapsed
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

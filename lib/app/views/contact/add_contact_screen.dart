@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
+import 'package:rememberme/app/controllers/add_contact_controller.dart';
 import 'package:rememberme/widgets/customAppbar.dart';
 
 class AddContactScreen extends StatefulWidget {
@@ -10,18 +14,7 @@ class AddContactScreen extends StatefulWidget {
 }
 
 class _AddContactScreenState extends State<AddContactScreen> {
-  DateTime? selectedDate;
-  final TextEditingController _meetingPlaceController = TextEditingController(text: 'Paris, Restaurant');
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _companyNameController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  
-  // Selected states
-  Set<String> selectedCharacteristics = {'Ambitious'};
-  String? selectedAgeRange = '10 - 20';
-  Set<String> selectedIndustries = {'Healthcare'};
-  String? selectedGender;
-  String? selectedEthnicity;
+  final AddContactController controller = Get.put(AddContactController());
   
   // Edit states
   bool _isEditingMeetingPlace = false;
@@ -30,8 +23,22 @@ class _AddContactScreenState extends State<AddContactScreen> {
   @override
   void initState() {
     super.initState();
-    // Set default date
-    selectedDate = DateTime(2025, 1, 16);
+    // Set default values
+    if (controller.selectedDate.value == null) {
+      controller.selectedDate.value = DateTime(2025, 1, 16);
+    }
+    if (controller.meetingPlaceController.text.isEmpty) {
+      controller.meetingPlaceController.text = 'Paris, Restaurant';
+    }
+    if (controller.selectedCharacteristics.isEmpty) {
+      controller.selectedCharacteristics.add('Ambitious');
+    }
+    if (controller.selectedAgeRange.value.isEmpty) {
+      controller.selectedAgeRange.value = '10 - 20';
+    }
+    if (controller.selectedIndustry.value.isEmpty) {
+      // Don't set default industry - user must select
+    }
     
     // Listen to focus changes
     _meetingPlaceFocusNode.addListener(() {
@@ -41,6 +48,80 @@ class _AddContactScreenState extends State<AddContactScreen> {
         });
       }
     });
+  }
+  
+  void _showImageSourceDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    'Select Image Source',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.black,
+                      fontFamily: 'PolySans',
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library, color: AppColors.primaryBlue),
+                  title: const Text(
+                    'Choose from Gallery',
+                    style: TextStyle(
+                      fontFamily: 'PolySans',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    controller.pickImage(source: ImageSource.gallery);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt, color: AppColors.primaryBlue),
+                  title: const Text(
+                    'Take a Photo',
+                    style: TextStyle(
+                      fontFamily: 'PolySans',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    controller.pickImage(source: ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  
+  @override
+  void dispose() {
+    _meetingPlaceFocusNode.dispose();
+    // Clean up controller when screen is disposed
+    Get.delete<AddContactController>();
+    super.dispose();
   }
 
   @override
@@ -94,11 +175,11 @@ class _AddContactScreenState extends State<AddContactScreen> {
                           ],
                         ),
                       ),
-                      // Large profile picture placeholder
+                      // Large profile picture placeholder or selected image
                       Positioned(
                         left: 10,
                         top: 10,
-                        child: Container(
+                        child: Obx(() => Container(
                           width: 120,
                           height: 120,
                           decoration: BoxDecoration(
@@ -109,12 +190,22 @@ class _AddContactScreenState extends State<AddContactScreen> {
                               width: 0,
                             ),
                           ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            size: 50,
-                            color: AppColors.textGray,
-                          ),
-                        ),
+                          child: controller.selectedImages.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Image.file(
+                                    controller.selectedImages.first,
+                                    fit: BoxFit.cover,
+                                    width: 120,
+                                    height: 120,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.camera_alt,
+                                  size: 50,
+                                  color: AppColors.textGray,
+                                ),
+                        )),
                       ),
                       // Small plus button overlay with image
                       Positioned(
@@ -122,7 +213,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                         right: 5,
                         child: GestureDetector(
                           onTap: () {
-                            // Handle profile picture selection
+                            _showImageSourceDialog(context);
                           },
                           child: Container(
                             width: 46,
@@ -184,7 +275,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                           Expanded(
                             child: _isEditingMeetingPlace
                                 ? TextField(
-                                    controller: _meetingPlaceController,
+                                    controller: controller.meetingPlaceController,
                                     focusNode: _meetingPlaceFocusNode,
                                     autofocus: true,
                                     style: TextStyle(
@@ -218,9 +309,9 @@ class _AddContactScreenState extends State<AddContactScreen> {
                                       });
                                     },
                                     child: Text(
-                                      _meetingPlaceController.text.isEmpty 
+                                      controller.meetingPlaceController.text.isEmpty 
                                         ? 'Paris, Restaurant' 
-                                        : _meetingPlaceController.text,
+                                        : controller.meetingPlaceController.text,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
@@ -292,17 +383,17 @@ class _AddContactScreenState extends State<AddContactScreen> {
                           SizedBox(width: 12),
                           // Value
                           Expanded(
-                            child: Text(
-                              selectedDate == null 
+                            child: Obx(() => Text(
+                              controller.selectedDate.value == null 
                                 ? 'Jan 16, 2025'
-                                : '${_formatDate(selectedDate!)}',
+                                : '${_formatDate(controller.selectedDate.value!)}',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.black,
                                 fontFamily: 'PolySans',
                               ),
-                            ),
+                            )),
                           ),
                         ],
                       ),
@@ -342,22 +433,20 @@ class _AddContactScreenState extends State<AddContactScreen> {
                       
                       // Name field
                       _buildInputField(
-                        controller: _nameController,
+                        controller: controller.nameController,
                         label: 'Name',
                       ),
                       SizedBox(height: 15),
                       
                       // Gender dropdown
-                      _buildDropdownField(
+                      Obx(() => _buildDropdownField(
                         label: 'Gender',
-                        value: selectedGender,
+                        value: controller.selectedGender.value.isEmpty ? null : controller.selectedGender.value,
                         items: ['Male', 'Female'],
                         onChanged: (String? value) {
-                          setState(() {
-                            selectedGender = value;
-                          });
+                          controller.selectedGender.value = value ?? '';
                         },
-                      ),
+                      )),
                     ],
                   ),
                 ),
@@ -415,16 +504,14 @@ class _AddContactScreenState extends State<AddContactScreen> {
                 SizedBox(height: 15),
                 
                 // Ethnicity dropdown
-                _buildDropdownField(
+                Obx(() => _buildDropdownField(
                   label: 'Ethnicity',
-                  value: selectedEthnicity,
+                  value: controller.selectedEthnicity.value.isEmpty ? null : controller.selectedEthnicity.value,
                   items: _getEthnicityList(),
                   onChanged: (String? value) {
-                    setState(() {
-                      selectedEthnicity = value;
-                    });
+                    controller.selectedEthnicity.value = value ?? '';
                   },
-                ),
+                )),
                 
                 SizedBox(height: 30),
                 
@@ -485,7 +572,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                 SizedBox(height: 15),
                 
                 _buildInputField(
-                  controller: _companyNameController,
+                  controller: controller.companyNameController,
                   label: 'Company Name',
                 ),
                 
@@ -514,7 +601,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                         ),
                       ),
                       TextField(
-                        controller: _descriptionController,
+                        controller: controller.descriptionController,
                         maxLines: null,
                         minLines: 4,
                         decoration: InputDecoration(
@@ -555,25 +642,34 @@ class _AddContactScreenState extends State<AddContactScreen> {
                       ),
                     ],
                   ),
-                  child: TextButton(
-                    onPressed: () {
-                      // Handle save
+                  child: Obx(() => TextButton(
+                    onPressed: controller.isLoading.value ? null : () {
+                      controller.saveContact();
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
-                      'Save',
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: 18,
-                        fontFamily: 'PolySans',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                    child: controller.isLoading.value
+                        ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                            ),
+                          )
+                        : Text(
+                            'Save',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                              fontFamily: 'PolySans',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  )),
                 ),
                 
                 SizedBox(height: 30),
@@ -588,15 +684,13 @@ class _AddContactScreenState extends State<AddContactScreen> {
   Future<void> _selectDateRange(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
+      initialDate: controller.selectedDate.value ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
+    if (picked != null && picked != controller.selectedDate.value) {
+      controller.selectedDate.value = picked;
     }
   }
 
@@ -709,46 +803,167 @@ class _AddContactScreenState extends State<AddContactScreen> {
       'See More'
     ];
 
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: characteristics.map((char) {
-        final isSelected = selectedCharacteristics.contains(char);
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (char == 'See More') {
-                // Handle see more
-                return;
-              }
-              if (isSelected) {
-                selectedCharacteristics.remove(char);
-              } else {
-                selectedCharacteristics.add(char);
-              }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: characteristics.map((char) {
+            return Obx(() {
+              final isSelected = controller.selectedCharacteristics.contains(char);
+              return GestureDetector(
+                onTap: () {
+                  if (char == 'See More') {
+                    // Show dialog to add custom characteristic
+                    _showAddCharacteristicDialog(context);
+                    return;
+                  }
+                  if (isSelected) {
+                    controller.selectedCharacteristics.remove(char);
+                  } else {
+                    controller.selectedCharacteristics.add(char);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.lightGray : AppColors.white,
+                    border: Border.all(
+                      color: isSelected ? AppColors.textGray : AppColors.borderLightGray,
+                    ),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Text(
+                    char,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.black,
+                      fontFamily: 'PolySans',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
             });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.lightGray : AppColors.white,
-              border: Border.all(
-                color: isSelected ? AppColors.textGray : AppColors.borderLightGray,
-              ),
-              borderRadius: BorderRadius.circular(25),
+          }).toList(),
+        ),
+        // Show custom characteristics if any
+        Obx(() {
+          final customChars = controller.selectedCharacteristics
+              .where((char) => !characteristics.contains(char))
+              .toList();
+          if (customChars.isEmpty) return SizedBox.shrink();
+          
+          return Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: customChars.map((char) {
+                return GestureDetector(
+                  onTap: () {
+                    controller.selectedCharacteristics.remove(char);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightGray,
+                      border: Border.all(
+                        color: AppColors.textGray,
+                      ),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          char,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.black,
+                            fontFamily: 'PolySans',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(
+                          Icons.close,
+                          size: 16,
+                          color: AppColors.textGray,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-            child: Text(
-              char,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.black,
+          );
+        }),
+      ],
+    );
+  }
+  
+  void _showAddCharacteristicDialog(BuildContext context) {
+    controller.customCharacteristicController.clear();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Add Characteristic',
+            style: TextStyle(
+              fontFamily: 'PolySans',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: TextField(
+            controller: controller.customCharacteristicController,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: 'Enter characteristic',
+              hintStyle: TextStyle(
+                color: AppColors.mediumGray,
                 fontFamily: 'PolySans',
-                fontWeight: FontWeight.w500,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  fontFamily: 'PolySans',
+                  color: AppColors.textGray,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final text = controller.customCharacteristicController.text.trim();
+                if (text.isNotEmpty) {
+                  controller.selectedCharacteristics.add(text);
+                  Navigator.pop(context);
+                }
+              },
+              child: Text(
+                'Add',
+                style: TextStyle(
+                  fontFamily: 'PolySans',
+                  color: AppColors.primaryBlue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         );
-      }).toList(),
+      },
     );
   }
 
@@ -765,33 +980,33 @@ class _AddContactScreenState extends State<AddContactScreen> {
       spacing: 12,
       runSpacing: 12,
       children: ageRanges.map((range) {
-        final isSelected = selectedAgeRange == range;
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedAgeRange = range;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.lightGray : AppColors.white,
-              border: Border.all(
-                color: isSelected ? AppColors.textGray : AppColors.borderLightGray,
+        return Obx(() {
+          final isSelected = controller.selectedAgeRange.value == range;
+          return GestureDetector(
+            onTap: () {
+              controller.selectedAgeRange.value = range;
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.lightGray : AppColors.white,
+                border: Border.all(
+                  color: isSelected ? AppColors.textGray : AppColors.borderLightGray,
+                ),
+                borderRadius: BorderRadius.circular(25),
               ),
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: Text(
-              range,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.black,
-                fontFamily: 'PolySans',
-                fontWeight: FontWeight.w500,
+              child: Text(
+                range,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.black,
+                  fontFamily: 'PolySans',
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-        );
+          );
+        });
       }).toList(),
     );
   }
@@ -811,49 +1026,36 @@ class _AddContactScreenState extends State<AddContactScreen> {
       spacing: 12,
       runSpacing: 12,
       children: industries.map((industry) {
-        final isSelected = selectedIndustries.contains(industry);
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (isSelected) {
-                selectedIndustries.remove(industry);
-              } else {
-                selectedIndustries.add(industry);
-              }
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.lightGray : AppColors.white,
-              border: Border.all(
-                color: isSelected ? AppColors.textGray : AppColors.borderLightGray,
+        return Obx(() {
+          final isSelected = controller.selectedIndustry.value == industry;
+          return GestureDetector(
+            onTap: () {
+              // Only one industry can be selected - replace previous selection
+              controller.selectedIndustry.value = isSelected ? '' : industry;
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.lightGray : AppColors.white,
+                border: Border.all(
+                  color: isSelected ? AppColors.textGray : AppColors.borderLightGray,
+                ),
+                borderRadius: BorderRadius.circular(20),
               ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              industry,
-              style: TextStyle(
-                color: AppColors.black,
-                fontSize: 14,
-                fontFamily: 'PolySans',
-                fontWeight: FontWeight.w500,
+              child: Text(
+                industry,
+                style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 14,
+                  fontFamily: 'PolySans',
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-        );
+          );
+        });
       }).toList(),
     );
-  }
-
-  @override
-  void dispose() {
-    _meetingPlaceController.dispose();
-    _nameController.dispose();
-    _companyNameController.dispose();
-    _descriptionController.dispose();
-    _meetingPlaceFocusNode.dispose();
-    super.dispose();
   }
 }
 

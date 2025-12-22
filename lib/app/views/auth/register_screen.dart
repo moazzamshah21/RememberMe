@@ -275,25 +275,30 @@ class RegisterScreen extends GetView<RegisterController> {
                 const SizedBox(height: 40),
                 
                 // Register Button
-                SizedBox(
+                Obx(() => SizedBox(
                   height: 60,
                   width: double.infinity,
                   child: Material(
                     borderRadius: BorderRadius.circular(16),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
-                      onTap: controller.register,
+                      onTap: controller.isLoading.value ? null : controller.register,
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
-                          gradient: const LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              AppColors.lightBlue,
-                              AppColors.cyan,
-                            ],
-                          ),
+                          gradient: controller.isLoading.value
+                              ? null
+                              : const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    AppColors.lightBlue,
+                                    AppColors.cyan,
+                                  ],
+                                ),
+                          color: controller.isLoading.value
+                              ? AppColors.lightBlue.withOpacity(0.6)
+                              : null,
                           boxShadow: [
                             BoxShadow(
                               color: AppColors.shadowBlackHeavy,
@@ -303,36 +308,48 @@ class RegisterScreen extends GetView<RegisterController> {
                             ),
                           ],
                         ),
-                        child: const Stack(
+                        child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            // Centered Text
-                            Text(
-                              "Register",
-                              style: TextStyle(
-                                color: AppColors.primaryBlue,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'PolySans',
-                                letterSpacing: 0.5,
-                              ),
-                            ),
+                            // Centered Text or Loading Indicator
+                            controller.isLoading.value
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        AppColors.primaryBlue,
+                                      ),
+                                    ),
+                                  )
+                                : const Text(
+                                    "Register",
+                                    style: TextStyle(
+                                      color: AppColors.primaryBlue,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'PolySans',
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                             
-                            // Icon at the end
-                            Positioned(
-                              right: 20,
-                              child: Icon(
-                                Icons.arrow_forward_rounded,
-                                color: AppColors.primaryBlue,
-                                size: 24,
+                            // Icon at the end (only show when not loading)
+                            if (!controller.isLoading.value)
+                              const Positioned(
+                                right: 20,
+                                child: Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: AppColors.primaryBlue,
+                                  size: 24,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                ),
+                )),
                 const SizedBox(height: 15),
                 
                 // Divider with "or"

@@ -233,8 +233,10 @@
 // screens/home_screen.dart
 import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
-import 'package:rememberme/app/data/contacts_data.dart';
+import 'package:rememberme/app/controllers/contacts_controller.dart';
+import 'package:rememberme/app/controllers/user_controller.dart';
 import 'package:rememberme/widgets/customAppbar.dart';
 import 'package:rememberme/widgets/saved_contacts_section.dart';
 
@@ -243,8 +245,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check if there are any contacts
-    final hasContacts = ContactsData.contacts.isNotEmpty;
+    // Use find if exists, otherwise put - ensures we use the same instance
+    final ContactsController contactsController = Get.isRegistered<ContactsController>()
+        ? Get.find<ContactsController>()
+        : Get.put(ContactsController());
+    final UserController userController = Get.isRegistered<UserController>()
+        ? Get.find<UserController>()
+        : Get.put(UserController());
 
     return Scaffold(
       body: NestedScrollView(
@@ -261,15 +268,15 @@ class HomeScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Hey Rio!",
+                          Obx(() => Text(
+                            "Hey ${userController.getDisplayName()}!",
                             style: TextStyle(
                               color: AppColors.primaryTealAlt,
                               fontSize: 32,
                               fontFamily: 'PolySans',
                               fontWeight: FontWeight.w600,
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 0),
                           Text(
                             "Ready to remember?",
@@ -293,20 +300,33 @@ class HomeScreen extends StatelessWidget {
         },
         body: Container(
           color: Colors.white,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!hasContacts)
-                  // Show "You're in!" section only when there are NO contacts
-                  Align(
-                    alignment: Alignment.center,
-                    child: FractionallySizedBox(
-                      widthFactor: 0.4,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 50, top: 40),
+          child: Obx(() {
+            // Show loading or empty state while loading
+            if (contactsController.isLoading.value) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(40.0),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            
+            // Show "You're in!" section only when there are NO contacts
+            if (contactsController.contacts.isEmpty) {
+              final screenHeight = MediaQuery.of(context).size.height;
+              final appBarHeight = 200.0; // Approximate appbar height
+              final availableHeight = screenHeight - appBarHeight;
+              
+              return SingleChildScrollView(
+                child: SizedBox(
+                  height: availableHeight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      FractionallySizedBox(
+                        widthFactor: 0.4,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               "You're in!",
@@ -339,24 +359,28 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
-                  )
-                else
-                  // Show contacts section when there ARE contacts
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20),
-                        SavedContactsSection(),
-                        SizedBox(height: 40),
-                      ],
-                    ),
+                      SizedBox(height: 50), // Bottom padding
+                    ],
                   ),
-              ],
-            ),
-          ),
+                ),
+              );
+            }
+            
+            // Show contacts section when there ARE contacts
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    SavedContactsSection(),
+                    SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            );
+          }),
         ),
       ),
     );
