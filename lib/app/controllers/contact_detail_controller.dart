@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:rememberme/app/controllers/contacts_controller.dart';
 import 'package:rememberme/app/controllers/favorites_controller.dart';
+import 'package:rememberme/app/controllers/settings_controller.dart';
 import 'package:rememberme/app/models/contact_model.dart';
 
 class ContactDetailController extends GetxController {
@@ -58,9 +59,6 @@ class ContactDetailController extends GetxController {
       return;
     }
     
-    final oldLength = profileImages.length;
-    
-    // Use imageUrls if available, otherwise fallback to profileImageUrl
     if (_contact!.imageUrls.isNotEmpty) {
       profileImages.value = List<String>.from(_contact!.imageUrls);
     } else if (_contact!.profileImageUrl.isNotEmpty) {
@@ -72,7 +70,7 @@ class ContactDetailController extends GetxController {
     // Reset image index if it's out of bounds
     if (currentImageIndex.value >= profileImages.length) {
       currentImageIndex.value = 0;
-      if (profileImages.length > 0) {
+      if (profileImages.isNotEmpty) {
         pageController.jumpToPage(0);
       }
     }
@@ -93,7 +91,7 @@ class ContactDetailController extends GetxController {
         _updateContactFromFirestore(data);
       }
     }, onError: (error) {
-      print('Error in contact real-time listener: $error');
+      debugPrint('Error in contact real-time listener: $error');
     });
   }
 
@@ -219,10 +217,10 @@ class ContactDetailController extends GetxController {
           .doc(_contact!.id)
           .update(updateData)
           .then((_) {
-            print('Successfully updated field $fieldName to Firestore');
+            debugPrint('Successfully updated field $fieldName to Firestore');
           })
           .catchError((error) {
-            print('Error updating Firestore: $error');
+            debugPrint('Error updating Firestore: $error');
             throw error;
           });
       
@@ -234,18 +232,18 @@ class ContactDetailController extends GetxController {
         'Success',
         'Field updated and saved to Firebase',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } catch (e) {
       isLoading.value = false;
-      print('Error updating field $fieldName: $e');
+      debugPrint('Error updating field $fieldName: $e');
       Get.snackbar(
         'Error',
         'Failed to save to Firebase: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
@@ -263,12 +261,19 @@ class ContactDetailController extends GetxController {
         !img.startsWith('assets/')
       ).length;
       
-      if (currentImageCount >= maxImages) {
+      // Check subscription plan
+      bool isPremium = false;
+      if (Get.isRegistered<SettingsController>()) {
+        final settingsController = Get.find<SettingsController>();
+        isPremium = settingsController.currentPlan.value != 'Free';
+      }
+      
+      if (!isPremium && currentImageCount >= maxImages) {
         Get.snackbar(
           'Limit Reached',
-          'You can only have up to $maxImages images per contact',
+          'You can only have up to $maxImages images per contact on the Free plan. Upgrade to add more!',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange.withOpacity(0.8),
+          backgroundColor: Colors.orange.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
         return;
@@ -287,7 +292,7 @@ class ContactDetailController extends GetxController {
               'Permission Required',
               'Camera permission is permanently denied. Please enable it in settings.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.orange.withOpacity(0.8),
+              backgroundColor: Colors.orange.withValues(alpha: 0.8),
               colorText: Colors.white,
               duration: const Duration(seconds: 4),
               mainButton: TextButton(
@@ -300,7 +305,7 @@ class ContactDetailController extends GetxController {
               'Permission Required',
               'Camera permission is required to take photos',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red.withOpacity(0.8),
+              backgroundColor: Colors.red.withValues(alpha: 0.8),
               colorText: Colors.white,
             );
           }
@@ -345,7 +350,7 @@ class ContactDetailController extends GetxController {
               'Permission Required',
               'Gallery permission is permanently denied. Please enable it in settings.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.orange.withOpacity(0.8),
+              backgroundColor: Colors.orange.withValues(alpha: 0.8),
               colorText: Colors.white,
               duration: const Duration(seconds: 4),
               mainButton: TextButton(
@@ -358,7 +363,7 @@ class ContactDetailController extends GetxController {
               'Permission Required',
               'Gallery permission is required to select photos',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red.withOpacity(0.8),
+              backgroundColor: Colors.red.withValues(alpha: 0.8),
               colorText: Colors.white,
             );
           }
@@ -366,7 +371,10 @@ class ContactDetailController extends GetxController {
         }
         
         // Calculate how many images we can still add
-        final remainingSlots = maxImages - currentImageCount;
+        int remainingSlots = 100; // Arbitrary large number for premium
+        if (!isPremium) {
+          remainingSlots = maxImages - currentImageCount;
+        }
         
         // Use multi-image picker for gallery
         final List<XFile> images = await _imagePicker.pickMultiImage(
@@ -388,9 +396,9 @@ class ContactDetailController extends GetxController {
           if (images.length > remainingSlots) {
             Get.snackbar(
               'Limit Reached',
-              'Only the first $remainingSlots image(s) were added. Maximum $maxImages images allowed.',
+              'Only the first $remainingSlots image(s) were added. ${isPremium ? "" : "Maximum $maxImages images allowed."}',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.orange.withOpacity(0.8),
+              backgroundColor: Colors.orange.withValues(alpha: 0.8),
               colorText: Colors.white,
             );
           }
@@ -401,7 +409,7 @@ class ContactDetailController extends GetxController {
         'Error',
         'Failed to pick image: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     }
@@ -420,7 +428,7 @@ class ContactDetailController extends GetxController {
           'Error',
           'You must be logged in to upload images',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.8),
+          backgroundColor: Colors.red.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
         return;
@@ -429,7 +437,7 @@ class ContactDetailController extends GetxController {
       // Create a unique filename
       final String fileName = 'contacts/${currentUser.uid}/${_contact!.id}/${DateTime.now().millisecondsSinceEpoch}.jpg';
       
-      print('Uploading image to Firebase Storage: $fileName');
+      debugPrint('Uploading image to Firebase Storage: $fileName');
       
       // Upload to Firebase Storage
       final Reference ref = _storage.ref().child(fileName);
@@ -437,11 +445,11 @@ class ContactDetailController extends GetxController {
       
       // Wait for upload to complete
       final TaskSnapshot snapshot = await uploadTask;
-      print('Image upload to Storage completed');
+      debugPrint('Image upload to Storage completed');
       
       // Get download URL
       final String downloadUrl = await snapshot.ref.getDownloadURL();
-      print('Image uploaded successfully. Download URL: $downloadUrl');
+      debugPrint('Image uploaded successfully. Download URL: $downloadUrl');
       
       // Get current imageUrls from Firestore
       final docSnapshot = await _firestore.collection('contacts').doc(_contact!.id).get();
@@ -450,7 +458,7 @@ class ContactDetailController extends GetxController {
         throw Exception('Contact document not found in Firestore');
       }
       
-      final data = docSnapshot.data() as Map<String, dynamic>? ?? {};
+      final data = docSnapshot.data() ?? {};
       
       List<String> currentImageUrls = [];
       final imageUrlsData = data['imageUrls'] as List<dynamic>?;
@@ -464,14 +472,20 @@ class ContactDetailController extends GetxController {
         }
       }
       
-      // Check if we've reached the maximum
-      if (currentImageUrls.length >= maxImages) {
+      // Check if we've reached the maximum (only for Free plan)
+      bool isPremium = false;
+      if (Get.isRegistered<SettingsController>()) {
+        final settingsController = Get.find<SettingsController>();
+        isPremium = settingsController.currentPlan.value != 'Free';
+      }
+
+      if (!isPremium && currentImageUrls.length >= maxImages) {
         isUploadingImage.value = false;
         Get.snackbar(
           'Limit Reached',
-          'Maximum $maxImages images allowed. Please remove an image first.',
+          'Maximum $maxImages images allowed. Please remove an image first or upgrade your plan.',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange.withOpacity(0.8),
+          backgroundColor: Colors.orange.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
         return;
@@ -480,7 +494,7 @@ class ContactDetailController extends GetxController {
       // Add new image URL
       currentImageUrls.add(downloadUrl);
       
-      print('Updating Firestore with ${currentImageUrls.length} images');
+      debugPrint('Updating Firestore with ${currentImageUrls.length} images');
       
       // Update Firestore with the new image URLs
       await _firestore
@@ -493,7 +507,7 @@ class ContactDetailController extends GetxController {
             'profileImageUrl': currentImageUrls.first,
           })
           .then((_) {
-            print('Successfully saved image URLs to Firestore');
+            debugPrint('Successfully saved image URLs to Firestore');
             // Update local contact immediately
             _contact!.imageUrls = List<String>.from(currentImageUrls);
             _contact!.profileImageUrl = currentImageUrls.first;
@@ -501,7 +515,7 @@ class ContactDetailController extends GetxController {
             update();
           })
           .catchError((error) {
-            print('Error updating Firestore with image URLs: $error');
+            debugPrint('Error updating Firestore with image URLs: $error');
             throw error;
           });
       
@@ -511,7 +525,7 @@ class ContactDetailController extends GetxController {
         'Success',
         'Image uploaded and saved to Firebase',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
@@ -519,12 +533,12 @@ class ContactDetailController extends GetxController {
       // Real-time listener will also update the contact automatically
     } catch (e) {
       isUploadingImage.value = false;
-      print('Error uploading image: $e');
+      debugPrint('Error uploading image: $e');
       Get.snackbar(
         'Error',
         'Failed to upload image: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
@@ -581,7 +595,7 @@ class ContactDetailController extends GetxController {
         'Error',
         'Failed to share contact: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     }

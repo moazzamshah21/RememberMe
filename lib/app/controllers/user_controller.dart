@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,7 +64,7 @@ class UserController extends GetxController {
       userName.value = currentUser?.displayName ?? 
                       currentUser?.email?.split('@')[0] ?? 
                       'User';
-      print('Error loading user name: $e');
+      debugPrint('Error loading user name: $e');
     }
   }
   

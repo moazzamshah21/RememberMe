@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
 import 'package:rememberme/app/controllers/settings_controller.dart';
-import 'package:rememberme/widgets/customAppbar.dart';
+import 'package:rememberme/widgets/custom_appbar.dart';
 
 class SettingsScreen extends GetView<SettingsController> {
   const SettingsScreen({super.key});
@@ -327,7 +327,7 @@ class SettingsScreen extends GetView<SettingsController> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -436,7 +436,7 @@ class SettingsScreen extends GetView<SettingsController> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

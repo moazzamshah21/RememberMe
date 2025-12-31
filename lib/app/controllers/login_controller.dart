@@ -24,7 +24,7 @@ class LoginController extends GetxController {
         'Error',
         'Please enter your email address',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -35,7 +35,7 @@ class LoginController extends GetxController {
         'Error',
         'Please enter a valid email address',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -47,7 +47,7 @@ class LoginController extends GetxController {
         'Error',
         'Please enter your password',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -58,7 +58,7 @@ class LoginController extends GetxController {
         'Error',
         'Password must be at least 6 characters',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -84,7 +84,7 @@ class LoginController extends GetxController {
           'Success',
           'Logged in successfully',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.8),
+          backgroundColor: Colors.green.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
       } else {
@@ -93,7 +93,7 @@ class LoginController extends GetxController {
           'Error',
           'Authentication failed. Please try again',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.8),
+          backgroundColor: Colors.red.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
       }
@@ -128,7 +128,7 @@ class LoginController extends GetxController {
         'Login Failed',
         errorMessage,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 4),
       );
@@ -138,7 +138,7 @@ class LoginController extends GetxController {
         'Error',
         'An unexpected error occurred: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     }
@@ -146,7 +146,7 @@ class LoginController extends GetxController {
 
   void googleLogin() {
     // Handle Google login
-    print('Google login pressed');
+    debugPrint('Google login pressed');
   }
 
   @override

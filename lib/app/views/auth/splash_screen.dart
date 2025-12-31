@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
 import 'package:rememberme/app/controllers/splash_controller.dart';
-import 'get_started_screen.dart';
 
 class SplashScreen extends GetView<SplashController> {
   const SplashScreen({super.key});

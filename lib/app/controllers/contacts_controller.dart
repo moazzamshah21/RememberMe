@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,9 +71,9 @@ class ContactsController extends GetxController {
             
             contacts.value = contactsList;
             isLoading.value = false;
-            print('Real-time update: ${contactsList.length} contacts for user ${currentUser.uid}');
+            debugPrint('Real-time update: ${contactsList.length} contacts for user ${currentUser.uid}');
           } catch (e) {
-            print('Error processing snapshot: $e');
+            debugPrint('Error processing snapshot: $e');
             errorMessage.value = 'Error processing contacts: ${e.toString()}';
             isLoading.value = false;
           }
@@ -81,7 +82,7 @@ class ContactsController extends GetxController {
           // If orderBy fails (index not created), try without orderBy
           final errorString = error.toString().toLowerCase();
           if (errorString.contains('index') || errorString.contains('requires an index')) {
-            print('OrderBy failed, falling back to query without orderBy: $error');
+            debugPrint('OrderBy failed, falling back to query without orderBy: $error');
             _contactsSubscription?.cancel();
             
             // Retry without orderBy
@@ -98,21 +99,21 @@ class ContactsController extends GetxController {
                   
                   contacts.value = contactsList;
                   isLoading.value = false;
-                  print('Real-time update (no orderBy): ${contactsList.length} contacts for user ${currentUser.uid}');
+                  debugPrint('Real-time update (no orderBy): ${contactsList.length} contacts for user ${currentUser.uid}');
                 } catch (e) {
-                  print('Error processing snapshot: $e');
+                  debugPrint('Error processing snapshot: $e');
                   errorMessage.value = 'Error processing contacts: ${e.toString()}';
                   isLoading.value = false;
                 }
               },
               onError: (error) {
-                print('Error in real-time listener: $error');
+                debugPrint('Error in real-time listener: $error');
                 errorMessage.value = 'Failed to load contacts: ${error.toString()}';
                 isLoading.value = false;
               },
             );
           } else {
-            print('Error in real-time listener: $error');
+            debugPrint('Error in real-time listener: $error');
             errorMessage.value = 'Failed to load contacts: ${error.toString()}';
             isLoading.value = false;
           }
@@ -121,7 +122,7 @@ class ContactsController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       errorMessage.value = 'Failed to setup listener: ${e.toString()}';
-      print('Error setting up real-time listener: $e');
+      debugPrint('Error setting up real-time listener: $e');
     }
   }
   
@@ -244,7 +245,7 @@ class ContactsController extends GetxController {
       // The real-time listener will automatically update contacts list,
       // which will trigger FavoritesController to update via ever()
     } catch (e) {
-      print('Error updating favorite: $e');
+      debugPrint('Error updating favorite: $e');
       
       // Revert local change on error
       final contactIndex = contacts.indexWhere((c) => c.id == contactId);

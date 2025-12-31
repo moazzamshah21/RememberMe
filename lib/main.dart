@@ -11,7 +11,7 @@
 // import 'package:rememberme/app/views/auth/get_started_screen.dart';
 // import 'package:rememberme/app/views/auth/login_screen.dart';
 // import 'package:rememberme/app/views/auth/register_screen.dart';
-// import 'package:rememberme/app/navigation/BottomTabs.dart'; 
+// import 'package:rememberme/app/navigation/bottom_tabs.dart'; 
 
 // void main() {
 //   runApp(const MyApp());
@@ -97,7 +97,7 @@ import 'package:rememberme/app/views/auth/get_started_screen.dart';
 import 'package:rememberme/app/views/auth/login_screen.dart';
 import 'package:rememberme/app/views/auth/register_screen.dart';
 
-import 'package:rememberme/app/navigation/BottomTabs.dart';
+import 'package:rememberme/app/navigation/bottom_tabs.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

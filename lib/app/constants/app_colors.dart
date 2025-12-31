@@ -50,11 +50,11 @@ class AppColors {
   static const Color borderGray = Colors.grey;
   
   // Shadow Colors
-  static Color shadowBlack = Colors.black.withOpacity(0.05);
-  static Color shadowBlackLight = Colors.black.withOpacity(0.09);
-  static Color shadowBlackMedium = Colors.black.withOpacity(0.1);
-  static Color shadowBlackHeavy = Colors.black.withOpacity(0.15);
-  static Color shadowBlackVeryHeavy = Colors.black.withOpacity(0.3);
+  static Color shadowBlack = Colors.black.withValues(alpha: 0.05);
+  static Color shadowBlackLight = Colors.black.withValues(alpha: 0.09);
+  static Color shadowBlackMedium = Colors.black.withValues(alpha: 0.1);
+  static Color shadowBlackHeavy = Colors.black.withValues(alpha: 0.15);
+  static Color shadowBlackVeryHeavy = Colors.black.withValues(alpha: 0.3);
   
   // Gradient Colors
   static const List<Color> primaryGradient = [
@@ -63,8 +63,8 @@ class AppColors {
   ];
   
   static List<Color> primaryGradientWithOpacity(double opacity) => [
-    lightBlue.withOpacity(opacity),
-    cyan.withOpacity(opacity),
+    lightBlue.withValues(alpha: opacity),
+    cyan.withValues(alpha: opacity),
   ];
   
   // Specific UI Colors
@@ -80,8 +80,8 @@ class AppColors {
   static const Color settingsExcludedFeatureGray = Color(0xFFAAAAAA);
   
   // Helper methods for opacity variations
-  static Color whiteWithOpacity(double opacity) => Colors.white.withOpacity(opacity);
-  static Color blackWithOpacity(double opacity) => Colors.black.withOpacity(opacity);
-  static Color grayWithOpacity(double opacity) => Colors.grey.withOpacity(opacity);
+  static Color whiteWithOpacity(double opacity) => Colors.white.withValues(alpha: opacity);
+  static Color blackWithOpacity(double opacity) => Colors.black.withValues(alpha: opacity);
+  static Color grayWithOpacity(double opacity) => Colors.grey.withValues(alpha: opacity);
 }
 

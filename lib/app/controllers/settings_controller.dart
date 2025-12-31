@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:rememberme/app/controllers/user_controller.dart';
@@ -64,7 +63,7 @@ class SettingsController extends GetxController {
       _subscriptionListener?.cancel();
       _subscriptionListener = _firestore.collection('users').doc(user.uid).snapshots().listen((snapshot) {
         if (snapshot.exists) {
-          final data = snapshot.data() as Map<String, dynamic>?;
+          final data = snapshot.data() ;
           if (data != null && data.containsKey('subscriptionPlan')) {
             currentPlan.value = data['subscriptionPlan'];
           }
@@ -80,7 +79,7 @@ class SettingsController extends GetxController {
         'Error',
         'You must be logged in to upgrade plan',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -105,7 +104,7 @@ class SettingsController extends GetxController {
         'Success',
         'Plan upgraded to $planName. All premium features are now unlocked!',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } catch (e) {
@@ -114,7 +113,7 @@ class SettingsController extends GetxController {
         'Error',
         'Failed to upgrade plan: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     }
@@ -146,7 +145,7 @@ class SettingsController extends GetxController {
           'Error',
           'Contacts not available. Please try again.',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.8),
+          backgroundColor: Colors.red.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
         return;
@@ -161,7 +160,7 @@ class SettingsController extends GetxController {
           'No Contacts',
           'You have no contacts to export.',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange.withOpacity(0.8),
+          backgroundColor: Colors.orange.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
         return;
@@ -180,7 +179,7 @@ class SettingsController extends GetxController {
         'Error',
         'Failed to export contacts: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
@@ -491,7 +490,7 @@ class SettingsController extends GetxController {
         'Success',
         'PDF exported successfully! ($contactCount contacts)',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
@@ -584,7 +583,7 @@ class SettingsController extends GetxController {
         'Logged Out',
         'You have been logged out successfully',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
@@ -594,7 +593,7 @@ class SettingsController extends GetxController {
         'Error',
         'Failed to logout: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     }

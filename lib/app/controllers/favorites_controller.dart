@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -75,9 +76,9 @@ class FavoritesController extends GetxController {
             
             favoriteContacts.value = favoritesList;
             isLoading.value = false;
-            print('Real-time favorites update: ${favoritesList.length} favorites for user ${currentUser.uid}');
+            debugPrint('Real-time favorites update: ${favoritesList.length} favorites for user ${currentUser.uid}');
           } catch (e) {
-            print('Error processing favorites snapshot: $e');
+            debugPrint('Error processing favorites snapshot: $e');
             errorMessage.value = 'Error processing favorites: ${e.toString()}';
             isLoading.value = false;
           }
@@ -86,7 +87,7 @@ class FavoritesController extends GetxController {
           // If orderBy fails (index not created), try without orderBy
           final errorString = error.toString().toLowerCase();
           if (errorString.contains('index') || errorString.contains('requires an index')) {
-            print('OrderBy failed for favorites, falling back to query without orderBy: $error');
+            debugPrint('OrderBy failed for favorites, falling back to query without orderBy: $error');
             _favoritesSubscription?.cancel();
             
             // Retry without orderBy
@@ -103,21 +104,21 @@ class FavoritesController extends GetxController {
                   
                   favoriteContacts.value = favoritesList;
                   isLoading.value = false;
-                  print('Real-time favorites update (no orderBy): ${favoritesList.length} favorites for user ${currentUser.uid}');
+                  debugPrint('Real-time favorites update (no orderBy): ${favoritesList.length} favorites for user ${currentUser.uid}');
                 } catch (e) {
-                  print('Error processing favorites snapshot: $e');
+                  debugPrint('Error processing favorites snapshot: $e');
                   errorMessage.value = 'Error processing favorites: ${e.toString()}';
                   isLoading.value = false;
                 }
               },
               onError: (error) {
-                print('Error in favorites real-time listener: $error');
+                debugPrint('Error in favorites real-time listener: $error');
                 errorMessage.value = 'Failed to load favorites: ${error.toString()}';
                 isLoading.value = false;
               },
             );
           } else {
-            print('Error in favorites real-time listener: $error');
+            debugPrint('Error in favorites real-time listener: $error');
             errorMessage.value = 'Failed to load favorites: ${error.toString()}';
             isLoading.value = false;
           }
@@ -126,7 +127,7 @@ class FavoritesController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       errorMessage.value = 'Failed to setup favorites listener: ${e.toString()}';
-      print('Error setting up favorites real-time listener: $e');
+      debugPrint('Error setting up favorites real-time listener: $e');
     }
   }
 

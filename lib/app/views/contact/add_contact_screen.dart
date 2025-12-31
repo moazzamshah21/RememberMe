@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
 import 'package:rememberme/app/controllers/add_contact_controller.dart';
-import 'package:rememberme/widgets/customAppbar.dart';
 
 class AddContactScreen extends StatefulWidget {
   const AddContactScreen({super.key});
@@ -156,19 +154,19 @@ class _AddContactScreenState extends State<AddContactScreen> {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              AppColors.lightBlue.withOpacity(0.19),
-                              AppColors.cyan.withOpacity(0.19),
+                              AppColors.lightBlue.withValues(alpha: 0.19),
+                              AppColors.cyan.withValues(alpha: 0.19),
                             ],
                             stops: [0.0, 1.0],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.lightBlue.withOpacity(0.2),
+                              color: AppColors.lightBlue.withValues(alpha: 0.2),
                               blurRadius: 30,
                               spreadRadius: 02,
                             ),
                             BoxShadow(
-                              color: AppColors.cyan.withOpacity(0.1),
+                              color: AppColors.cyan.withValues(alpha: 0.1),
                               blurRadius: 30,
                               spreadRadius: 02,
                             ),
@@ -386,7 +384,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                             child: Obx(() => Text(
                               controller.selectedDate.value == null 
                                 ? 'Jan 16, 2025'
-                                : '${_formatDate(controller.selectedDate.value!)}',
+                                : _formatDate(controller.selectedDate.value!),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,

@@ -100,16 +100,16 @@ class AppSearchController extends GetxController {
             
             allContacts.value = contactsList;
             // _updateFilteredContacts() will be called by ever(allContacts) listener
-            print('Search: Real-time update: ${contactsList.length} contacts');
+            debugPrint('Search: Real-time update: ${contactsList.length} contacts');
           } catch (e) {
-            print('Error processing snapshot: $e');
+            debugPrint('Error processing snapshot: $e');
           }
         },
         onError: (error) {
           // If orderBy fails (index not created), try without orderBy
           final errorString = error.toString().toLowerCase();
           if (errorString.contains('index') || errorString.contains('requires an index')) {
-            print('OrderBy failed, falling back to query without orderBy: $error');
+            debugPrint('OrderBy failed, falling back to query without orderBy: $error');
             _contactsSubscription?.cancel();
             
             // Retry without orderBy
@@ -126,22 +126,22 @@ class AppSearchController extends GetxController {
                   
                   allContacts.value = contactsList;
                   // _updateFilteredContacts() will be called by ever(allContacts) listener
-                  print('Search: Real-time update (no orderBy): ${contactsList.length} contacts');
+                  debugPrint('Search: Real-time update (no orderBy): ${contactsList.length} contacts');
                 } catch (e) {
-                  print('Error processing snapshot: $e');
+                  debugPrint('Error processing snapshot: $e');
                 }
               },
               onError: (error) {
-                print('Error in real-time listener: $error');
+                debugPrint('Error in real-time listener: $error');
               },
             );
           } else {
-            print('Error in real-time listener: $error');
+            debugPrint('Error in real-time listener: $error');
           }
         },
       );
     } catch (e) {
-      print('Error setting up real-time listener: $e');
+      debugPrint('Error setting up real-time listener: $e');
     }
   }
   
@@ -186,7 +186,7 @@ class AppSearchController extends GetxController {
           
           // Debug: Log each contact being filtered
           if (selectedIndustriesList.length == 1) {
-            print('Filter check: ${contact.name} | Industries: "${contact.industry}" | Split: $industryList | Selected: $normalizedSelected | Matches: $matches');
+            debugPrint('Filter check: ${contact.name} | Industries: "${contact.industry}" | Split: $industryList | Selected: $normalizedSelected | Matches: $matches');
           }
           
           return matches;
@@ -211,27 +211,27 @@ class AppSearchController extends GetxController {
       
       // Debug output when filtering
       if (selectedIndustriesList.isNotEmpty || queryLower.isNotEmpty) {
-        print('=== FILTER RESULTS ===');
-        print('Query: "$query"');
-        print('Selected: ${selectedIndustriesList.join(", ")}');
-        print('Total contacts: ${allContacts.length}');
-        print('Filtered contacts: ${filtered.length}');
-        print('All contacts details:');
+        debugPrint('=== FILTER RESULTS ===');
+        debugPrint('Query: "$query"');
+        debugPrint('Selected: ${selectedIndustriesList.join(", ")}');
+        debugPrint('Total contacts: ${allContacts.length}');
+        debugPrint('Filtered contacts: ${filtered.length}');
+        debugPrint('All contacts details:');
         for (var contact in allContacts) {
-          print('  - ${contact.name} | profession: "${contact.profession}" | industries: "${contact.industry}"');
+          debugPrint('  - ${contact.name} | profession: "${contact.profession}" | industries: "${contact.industry}"');
         }
         if (filtered.isNotEmpty) {
-          print('Filtered results:');
+          debugPrint('Filtered results:');
           for (var contact in filtered) {
-            print('  - ${contact.name} | profession: "${contact.profession}" | industries: "${contact.industry}"');
+            debugPrint('  - ${contact.name} | profession: "${contact.profession}" | industries: "${contact.industry}"');
           }
         } else {
-          print('No contacts match the filter');
+          debugPrint('No contacts match the filter');
         }
-        print('=====================');
+        debugPrint('=====================');
       }
     } catch (e) {
-      print('Error updating filtered contacts: $e');
+      debugPrint('Error updating filtered contacts: $e');
       filteredContacts.clear();
     }
   }

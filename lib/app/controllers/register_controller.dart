@@ -33,7 +33,7 @@ class RegisterController extends GetxController {
         'Error',
         'Please enter your full name',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -45,7 +45,7 @@ class RegisterController extends GetxController {
         'Error',
         'Please enter your email address',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -56,7 +56,7 @@ class RegisterController extends GetxController {
         'Error',
         'Please enter a valid email address',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -68,7 +68,7 @@ class RegisterController extends GetxController {
         'Error',
         'Please enter your password',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -79,7 +79,7 @@ class RegisterController extends GetxController {
         'Error',
         'Password must be at least 6 characters',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -91,7 +91,7 @@ class RegisterController extends GetxController {
         'Error',
         'Please confirm your password',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -102,7 +102,7 @@ class RegisterController extends GetxController {
         'Error',
         'Passwords do not match',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -110,19 +110,6 @@ class RegisterController extends GetxController {
 
     try {
       isLoading.value = true;
-      
-      // Verify Firebase is initialized
-      if (_auth.app == null) {
-        isLoading.value = false;
-        Get.snackbar(
-          'Error',
-          'Firebase is not initialized. Please restart the app',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.8),
-          colorText: Colors.white,
-        );
-        return;
-      }
       
       // Create user with email and password
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
@@ -140,7 +127,7 @@ class RegisterController extends GetxController {
           await user.reload();
         } catch (e) {
           // If updating display name fails, continue anyway
-          print('Failed to update display name: $e');
+          debugPrint('Failed to update display name: $e');
         }
 
         // Save user data to Firestore
@@ -154,10 +141,10 @@ class RegisterController extends GetxController {
             'updatedAt': FieldValue.serverTimestamp(),
           }, SetOptions(merge: true));
           
-          print('User data saved to Firestore successfully');
+          debugPrint('User data saved to Firestore successfully');
         } catch (e) {
           // Log error but don't fail registration if Firestore save fails
-          print('Failed to save user data to Firestore: $e');
+          debugPrint('Failed to save user data to Firestore: $e');
           // Still show success since auth was created
         }
 
@@ -170,7 +157,7 @@ class RegisterController extends GetxController {
           'Success',
           'Account created successfully',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.8),
+          backgroundColor: Colors.green.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
       } else {
@@ -179,7 +166,7 @@ class RegisterController extends GetxController {
           'Error',
           'Registration failed. Please try again',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.8),
+          backgroundColor: Colors.red.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
       }
@@ -214,7 +201,7 @@ class RegisterController extends GetxController {
         'Registration Failed',
         errorMessage,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 4),
       );
@@ -236,19 +223,19 @@ class RegisterController extends GetxController {
         'Registration Failed',
         errorMessage,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 4),
       );
       
       // Log the full error for debugging
-      print('Registration error: $e');
+      debugPrint('Registration error: $e');
     }
   }
 
   void googleRegister() {
     // Handle Google registration
-    print('Google register pressed');
+    debugPrint('Google register pressed');
   }
 
   @override

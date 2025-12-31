@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
 import 'package:rememberme/app/controllers/favorites_controller.dart';
-import 'package:rememberme/widgets/customAppbar.dart';
+import 'package:rememberme/widgets/custom_appbar.dart';
 import 'package:rememberme/widgets/saved_contact_item.dart';
 
 class FavoritesScreen extends GetView<FavoritesController> {

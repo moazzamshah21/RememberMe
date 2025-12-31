@@ -38,7 +38,7 @@
 //               groupedContacts[timePeriod]!.isNotEmpty)
 //             ...groupedContacts[timePeriod]!.map((contact) => 
 //               SavedContactItem(contact: contact)
-//             ).toList(),
+//             ),
           
 //           // Empty state if no contacts for this time period
 //           if (!groupedContacts.containsKey(timePeriod) || 
@@ -165,7 +165,7 @@ class SavedContactsSection extends StatelessWidget {
             // Contact Items for this time period
             ...groupedContacts[timePeriod]!.map((contact) => 
               SavedContactItem(contact: contact)
-            ).toList(),
+            ),
           ],
         ],
       );

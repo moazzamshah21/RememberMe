@@ -49,7 +49,7 @@ class AddContactController extends GetxController {
           'Limit Reached',
           'You can only select up to $maxImages images',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange.withOpacity(0.8),
+          backgroundColor: Colors.orange.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
         return;
@@ -69,7 +69,7 @@ class AddContactController extends GetxController {
               'Permission Required',
               'Camera permission is permanently denied. Please enable it in settings.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.orange.withOpacity(0.8),
+              backgroundColor: Colors.orange.withValues(alpha: 0.8),
               colorText: Colors.white,
               duration: const Duration(seconds: 4),
               mainButton: TextButton(
@@ -82,7 +82,7 @@ class AddContactController extends GetxController {
               'Permission Required',
               'Camera permission is required to take photos',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red.withOpacity(0.8),
+              backgroundColor: Colors.red.withValues(alpha: 0.8),
               colorText: Colors.white,
             );
           }
@@ -135,7 +135,7 @@ class AddContactController extends GetxController {
               'Permission Required',
               'Gallery permission is permanently denied. Please enable it in settings.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.orange.withOpacity(0.8),
+              backgroundColor: Colors.orange.withValues(alpha: 0.8),
               colorText: Colors.white,
               duration: const Duration(seconds: 4),
               mainButton: TextButton(
@@ -148,7 +148,7 @@ class AddContactController extends GetxController {
               'Permission Required',
               'Gallery permission is required to select photos',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red.withOpacity(0.8),
+              backgroundColor: Colors.red.withValues(alpha: 0.8),
               colorText: Colors.white,
             );
           }
@@ -176,7 +176,7 @@ class AddContactController extends GetxController {
               'Limit Reached',
               'Only the first $remainingSlots image(s) were added. Maximum $maxImages images allowed.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.orange.withOpacity(0.8),
+              backgroundColor: Colors.orange.withValues(alpha: 0.8),
               colorText: Colors.white,
             );
           }
@@ -187,7 +187,7 @@ class AddContactController extends GetxController {
         'Error',
         'Failed to pick image: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     }
@@ -256,7 +256,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please enter the contact name',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -267,7 +267,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please enter where you met',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -278,7 +278,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please select a meeting date',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -289,7 +289,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please select gender',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -300,7 +300,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please select ethnicity',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -311,7 +311,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please select age range',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -322,7 +322,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please select at least one characteristic',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -333,7 +333,7 @@ class AddContactController extends GetxController {
         'Error',
         'Please select an industry',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -346,7 +346,7 @@ class AddContactController extends GetxController {
         'Error',
         'You must be logged in to save contacts',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -378,7 +378,7 @@ class AddContactController extends GetxController {
             'Error',
             'Failed to upload images: ${e.toString()}',
             snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red.withOpacity(0.8),
+            backgroundColor: Colors.red.withValues(alpha: 0.8),
             colorText: Colors.white,
             duration: const Duration(seconds: 4),
           );
@@ -420,7 +420,7 @@ class AddContactController extends GetxController {
         'Success',
         'Successfully saved the contact',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
@@ -449,7 +449,7 @@ class AddContactController extends GetxController {
         'Error',
         'Failed to save contact: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 4),
       );

@@ -48,7 +48,7 @@ class BottomTabs extends GetView<BottomTabsController> {
           duration: const Duration(milliseconds: 100),
           height: 75,
           width: 75,
-          transform: Matrix4.identity()..scale(controller.isPressed.value ? 0.9 : 1.0),
+          transform: Matrix4.identity()..setEntry(0, 0, controller.isPressed.value ? 0.95 : 1.0)..setEntry(1, 1, controller.isPressed.value ? 0.95 : 1.0),
           transformAlignment: Alignment.center,
           decoration: BoxDecoration(
             image: const DecorationImage(

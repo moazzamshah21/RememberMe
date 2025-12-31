@@ -185,7 +185,7 @@ class LoginScreen extends GetView<LoginController> {
                                 ],
                               ),
                         color: controller.isLoading.value
-                            ? AppColors.lightBlue.withOpacity(0.6)
+                            ? AppColors.lightBlue.withValues(alpha: 0.6)
                             : null,
                         boxShadow: [
                           BoxShadow(

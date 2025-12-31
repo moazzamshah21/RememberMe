@@ -142,7 +142,6 @@
 // // }
 
 // import 'package:flutter/material.dart';
-// import 'login_screen.dart'; // Import the LoginScreen
 
 // class GetStartedScreen extends StatefulWidget {
 //   const GetStartedScreen({super.key});
@@ -295,7 +294,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
-import 'login_screen.dart'; // Import the LoginScreen
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
@@ -320,7 +318,7 @@ class GetStartedScreen extends StatelessWidget {
                 // Top Content
                 Expanded(
                   flex: 7,
-                  child: Container(
+                  child: SizedBox(
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
