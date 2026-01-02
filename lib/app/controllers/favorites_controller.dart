@@ -61,7 +61,7 @@ class FavoritesController extends GetxController {
           .where('isFavorite', isEqualTo: true);
       
       // Try with orderBy first
-      Query orderedQuery = baseQuery.orderBy('createdAt', descending: true);
+      Query orderedQuery = baseQuery.orderBy('updatedAt', descending: true);
       
       _favoritesSubscription = orderedQuery.snapshots().listen(
         (QuerySnapshot snapshot) {
@@ -72,7 +72,7 @@ class FavoritesController extends GetxController {
             }).toList();
             
             // Sort by date added (newest first) as fallback
-            favoritesList.sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
+            favoritesList.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
             
             favoriteContacts.value = favoritesList;
             isLoading.value = false;
@@ -100,7 +100,7 @@ class FavoritesController extends GetxController {
                   }).toList();
                   
                   // Sort by date since we didn't use orderBy
-                  favoritesList.sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
+                  favoritesList.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
                   
                   favoriteContacts.value = favoritesList;
                   isLoading.value = false;
@@ -133,11 +133,11 @@ class FavoritesController extends GetxController {
 
   Contact _documentToContact(String id, Map<String, dynamic> data) {
     // Convert Firestore data to Contact model (same logic as ContactsController)
-    final meetingDate = data['meetingDate'] as Timestamp?;
     final createdAt = data['createdAt'] as Timestamp?;
+    final updatedAt = data['updatedAt'] as Timestamp?;
     
-    // Determine time period based on meeting date or created date
-    final dateToUse = meetingDate?.toDate() ?? createdAt?.toDate() ?? DateTime.now();
+    // Use updatedAt for sorting and time period, fallback to createdAt or now
+    final dateToUse = updatedAt?.toDate() ?? createdAt?.toDate() ?? DateTime.now();
     final timePeriod = _getTimePeriod(dateToUse);
     
     // Get profession from industries (first industry or empty)
@@ -174,6 +174,7 @@ class FavoritesController extends GetxController {
       name: data['name'] as String? ?? 'Unknown',
       location: location,
       dateAdded: createdAt?.toDate() ?? DateTime.now(),
+      updatedAt: dateToUse,
       isFavorite: data['isFavorite'] as bool? ?? false,
       notes: data['description'] as String? ?? '',
       company: data['companyName'] as String? ?? '',
@@ -188,18 +189,21 @@ class FavoritesController extends GetxController {
 
   String _getTimePeriod(DateTime date) {
     final now = DateTime.now();
-    final difference = now.difference(date);
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final dateToCheck = DateTime(date.year, date.month, date.day);
     
-    if (difference.inDays == 0) {
-      return 'Recently Added';
-    } else if (difference.inDays == 1) {
+    if (dateToCheck.isAtSameMomentAs(today)) {
+      return 'Today';
+    } else if (dateToCheck.isAtSameMomentAs(yesterday)) {
       return 'Yesterday';
-    } else if (difference.inDays <= 7) {
-      return 'Last 7 Days';
-    } else if (difference.inDays <= 30) {
-      return 'Last 30 Days';
     } else {
-      return 'Older';
+      final difference = today.difference(dateToCheck).inDays;
+      if (difference <= 7) {
+        return 'Last 7 Days';
+      } else {
+        return 'Older';
+      }
     }
   }
 

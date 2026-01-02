@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rememberme/app/constants/app_colors.dart';
+import 'package:rememberme/app/controllers/bottom_tabs_controller.dart';
 import 'package:rememberme/app/controllers/search_controller.dart' as app;
 import 'package:rememberme/app/controllers/settings_controller.dart';
 import 'package:rememberme/widgets/custom_appbar.dart';
@@ -124,6 +125,28 @@ class SearchScreen extends GetView<app.AppSearchController> {
                                 }
 
                                 if (!isPremium) {
+                                  // Get.snackbar(
+                                  //   'Premium Feature',
+                                  //   'Advanced filtering is available for Pro and Premium users. Please upgrade to use this feature.',
+                                  //   snackPosition: SnackPosition.BOTTOM,
+                                  //   backgroundColor: AppColors.primaryTeal,
+                                  //   colorText: Colors.white,
+                                  //   duration: const Duration(seconds: 3),
+                                  //   mainButton: TextButton(
+                                  //     onPressed: () {
+                                  //       Get.back(); // Close snackbar
+                                  //       Get.toNamed('settings'); // Navigate to settings
+                                  //     },
+                                  //     child: const Text(
+                                  //       'Upgrade',
+                                  //       style: TextStyle(
+                                  //         color: Colors.white,
+                                  //         fontWeight: FontWeight.bold,
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // );
+
                                   Get.snackbar(
                                     'Premium Feature',
                                     'Advanced filtering is available for Pro and Premium users. Please upgrade to use this feature.',
@@ -133,8 +156,9 @@ class SearchScreen extends GetView<app.AppSearchController> {
                                     duration: const Duration(seconds: 3),
                                     mainButton: TextButton(
                                       onPressed: () {
-                                        Get.back(); // Close snackbar
-                                        Get.toNamed('/settings'); // Navigate to settings
+                                        Get.closeAllSnackbars();
+                                        final bottomTabsController = Get.find<BottomTabsController>();
+                                        bottomTabsController.changeTab(3);
                                       },
                                       child: const Text(
                                         'Upgrade',

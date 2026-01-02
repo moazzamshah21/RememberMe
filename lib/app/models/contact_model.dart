@@ -7,6 +7,7 @@ class Contact {
   final String name;
   final String location;
   final DateTime dateAdded;
+  final DateTime updatedAt;
   bool isFavorite;
   String notes;
   String company;
@@ -25,6 +26,7 @@ class Contact {
     required this.name,
     required this.location,
     required this.dateAdded,
+    required this.updatedAt,
     this.isFavorite = false,
     this.notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
     this.company = "Lorem Ipsum . Pvt. Ltd",

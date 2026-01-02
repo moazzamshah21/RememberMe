@@ -233,9 +233,9 @@ class AddContactController extends GetxController {
           final String downloadUrl = await snapshot.ref.getDownloadURL();
           imageUrls.add(downloadUrl);
           
-          print('Uploaded image $i: $downloadUrl');
+          debugPrint('Uploaded image $i: $downloadUrl');
         } catch (e) {
-          print('Error uploading image $i: $e');
+          debugPrint('Error uploading image $i: $e');
           // Continue with other images even if one fails
         }
       }
@@ -244,7 +244,7 @@ class AddContactController extends GetxController {
       return imageUrls;
     } catch (e) {
       isUploadingImage.value = false;
-      print('Error uploading images: $e');
+      debugPrint('Error uploading images: $e');
       throw Exception('Failed to upload images: ${e.toString()}');
     }
   }
@@ -436,7 +436,7 @@ class AddContactController extends GetxController {
           contactsController.refreshContacts();
         }
       } catch (e) {
-        print('Error refreshing contacts: $e');
+        debugPrint('Error refreshing contacts: $e');
       }
       
       // Navigate back to home screen
@@ -482,7 +482,7 @@ class AddContactController extends GetxController {
       const int freePlanContactLimit = 5;
       return contactsController.contacts.length < freePlanContactLimit;
     } catch (e) {
-      print('Error checking subscription limit: $e');
+      debugPrint('Error checking subscription limit: $e');
       // If there's an error, allow the save to proceed
       return true;
     }
