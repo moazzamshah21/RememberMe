@@ -518,22 +518,96 @@ class SettingsController extends GetxController {
 
   void handleLogout() {
     Get.dialog(
-      AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+      Dialog(
+        backgroundColor: AppColors.primaryBlue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.cyan.withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
-          TextButton(
-            onPressed: () async {
-              Get.back();
-              await _performLogout();
-            },
-            child: const Text('Logout'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Logout',
+                style: TextStyle(
+                  color: AppColors.cyan,
+                  fontFamily: 'PolySans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                'Are you sure you want to logout?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontFamily: 'PolySans',
+                ),
+              ),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: Material(
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () async {
+                      Get.back();
+                      await _performLogout();
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            AppColors.lightBlue,
+                            AppColors.cyan,
+                          ],
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        'Logout',
+                        style: TextStyle(
+                          color: AppColors.primaryBlue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'PolySans',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: AppColors.cyan,
+                    fontFamily: 'PolySans',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       barrierDismissible: false,
     );
