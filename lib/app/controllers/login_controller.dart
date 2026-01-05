@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
@@ -8,6 +9,7 @@ class LoginController extends GetxController {
   final RxBool obscurePassword = true.obs;
   final RxBool isLoading = false.obs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
@@ -137,6 +139,107 @@ class LoginController extends GetxController {
       Get.snackbar(
         'Error',
         'An unexpected error occurred: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    if (email.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please enter your email address',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (!_isValidEmail(email)) {
+      Get.snackbar(
+        'Error',
+        'Please enter a valid email address',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      // Show loading indicator
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      // Check if email exists in Firestore
+      final userQuery = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (userQuery.docs.isEmpty) {
+        // Close loading dialog
+        Get.back();
+        
+        Get.snackbar(
+          'Error',
+          'This email doesn\'t exist',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withValues(alpha: 0.8),
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      await _auth.sendPasswordResetEmail(email: email);
+      
+      // Close loading dialog
+      Get.back();
+      // Close input dialog if open
+      Get.back(); 
+
+      Get.snackbar(
+        'Success',
+        'Password reset email sent to $email',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    } on FirebaseAuthException catch (e) {
+      // Close loading dialog
+      Get.back();
+      
+      String errorMessage = 'An error occurred';
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found with this email address';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        default:
+          errorMessage = e.message ?? 'Failed to send reset email';
+      }
+
+      Get.snackbar(
+        'Error',
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      // Close loading dialog
+      Get.back();
+      
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,

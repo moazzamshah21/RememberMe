@@ -160,7 +160,150 @@ class LoginScreen extends GetView<LoginController> {
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              
+              // Forgot Password Button
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    final TextEditingController resetEmailController = TextEditingController(text: controller.emailController.text);
+                    Get.dialog(
+                      Dialog(
+                        backgroundColor: AppColors.primaryBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppColors.cyan.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'Reset Password',
+                                style: TextStyle(
+                                  color: AppColors.cyan,
+                                  fontFamily: 'PolySans',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+                              const Text(
+                                'Enter your email address to receive a password reset link.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontFamily: 'PolySans',
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.whiteWithOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: AppColors.whiteWithOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  controller: resetEmailController,
+                                  style: const TextStyle(
+                                    color: AppColors.cyan,
+                                    fontFamily: 'PolySans',
+                                    fontSize: 16,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Email Address',
+                                    hintStyle: TextStyle(
+                                      color: AppColors.lightBlue,
+                                      fontFamily: 'PolySans',
+                                      fontSize: 16,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Material(
+                                  borderRadius: BorderRadius.circular(12),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: InkWell(
+                                    onTap: () {
+                                      controller.sendPasswordResetEmail(resetEmailController.text.trim());
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            AppColors.lightBlue,
+                                            AppColors.cyan,
+                                          ],
+                                        ),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: const Text(
+                                        'Send Link',
+                                        style: TextStyle(
+                                          color: AppColors.primaryBlue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: 'PolySans',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextButton(
+                                onPressed: () => Get.back(),
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    color: AppColors.cyan,
+                                    fontFamily: 'PolySans',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: AppColors.cyan,
+                      fontFamily: 'PolySans',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
               
               // Login Button
               Obx(() => SizedBox(
