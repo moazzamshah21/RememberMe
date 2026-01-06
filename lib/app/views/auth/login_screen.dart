@@ -428,10 +428,12 @@ class LoginScreen extends GetView<LoginController> {
               const SizedBox(height: 15),
               
               // Google Login Button
-              Container(
+              Obx(() => Container(
                 height: 60,
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: controller.isGoogleLoading.value
+                      ? AppColors.white.withValues(alpha: 0.6)
+                      : AppColors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -446,23 +448,37 @@ class LoginScreen extends GetView<LoginController> {
                     borderRadius: BorderRadius.circular(16),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
-                      onTap: controller.googleLogin,
+                      onTap: controller.isGoogleLoading.value ? null : controller.googleLogin,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/images/Google.png'),
-                              fit: BoxFit.contain,
+                        if (controller.isGoogleLoading.value)
+                          const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.primaryBlue,
+                              ),
+                            ),
+                          )
+                        else
+                          Container(
+                            width: 28,
+                            height: 28,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/images/Google.png'),
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Login with Google',
+                        if (!controller.isGoogleLoading.value) const SizedBox(width: 12),
+                        Text(
+                          controller.isGoogleLoading.value
+                              ? 'Signing in...'
+                              : 'Login with Google',
                           style: TextStyle(
                             color: AppColors.primaryBlue,
                             fontSize: 16,
@@ -474,7 +490,7 @@ class LoginScreen extends GetView<LoginController> {
                     ),
                   ),
                 ),
-              ),
+              )),
               const SizedBox(height: 40),
               
               // Register Link

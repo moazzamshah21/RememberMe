@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "274244221752",
+    "firebase_url": "https://rememberme-860f1-default-rtdb.firebaseio.com",
     "project_id": "rememberme-860f1",
     "storage_bucket": "rememberme-860f1.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.rememberme"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "274244221752-1gfglvrknns4jhjfd8nlicrcs9ng7h86.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rememberme",
+            "certificate_hash": "d5c760c4b8a0a208fb8a24390c0836d23e30ced0"
+          }
+        },
+        {
+          "client_id": "274244221752-dc5bfvpfo3uu2u5t6tohremortrp3f6q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAxJtICS45TEs3S1DfAEcreSOBgFTS69oE"
@@ -20,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "274244221752-dc5bfvpfo3uu2u5t6tohremortrp3f6q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "274244221752-1soteb2l1jcorgaoftnefjoe0v62cajc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rememberme"
+              }
+            }
+          ]
         }
       }
     }
