@@ -907,59 +907,124 @@ class _AddContactScreenState extends State<AddContactScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            'Add Characteristic',
-            style: TextStyle(
-              fontFamily: 'PolySans',
-              fontWeight: FontWeight.w600,
+        return Dialog(
+          backgroundColor: AppColors.primaryBlue,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.primaryBlue,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.cyan.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Add Characteristic',
+                  style: TextStyle(
+                    color: AppColors.cyan,
+                    fontFamily: 'PolySans',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteWithOpacity(0.05),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.whiteWithOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: controller.customCharacteristicController,
+                    autofocus: true,
+                    style: const TextStyle(
+                      color: AppColors.cyan,
+                      fontFamily: 'PolySans',
+                      fontSize: 16,
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Enter characteristic',
+                      hintStyle: TextStyle(
+                        color: AppColors.lightBlue,
+                        fontFamily: 'PolySans',
+                        fontSize: 16,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: Material(
+                    borderRadius: BorderRadius.circular(12),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () {
+                        final text = controller.customCharacteristicController.text.trim();
+                        if (text.isNotEmpty) {
+                          controller.selectedCharacteristics.add(text);
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              AppColors.lightBlue,
+                              AppColors.cyan,
+                            ],
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Add',
+                          style: TextStyle(
+                            color: AppColors.primaryBlue,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'PolySans',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: AppColors.cyan,
+                      fontFamily: 'PolySans',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          content: TextField(
-            controller: controller.customCharacteristicController,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: 'Enter characteristic',
-              hintStyle: TextStyle(
-                color: AppColors.mediumGray,
-                fontFamily: 'PolySans',
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  fontFamily: 'PolySans',
-                  color: AppColors.textGray,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                final text = controller.customCharacteristicController.text.trim();
-                if (text.isNotEmpty) {
-                  controller.selectedCharacteristics.add(text);
-                  Navigator.pop(context);
-                }
-              },
-              child: Text(
-                'Add',
-                style: TextStyle(
-                  fontFamily: 'PolySans',
-                  color: AppColors.primaryBlue,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
         );
       },
     );

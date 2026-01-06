@@ -564,33 +564,123 @@ class ContactDetailScreen extends GetView<ContactDetailController> {
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Edit $fieldTitle'),
-        content: TextField(
-          controller: textController,
-          autofocus: true,
-          maxLines: fieldName == 'notes' ? 5 : (isMultiValue ? 3 : 1),
-          decoration: InputDecoration(
-            hintText: hint,
-            border: const OutlineInputBorder(),
+      builder: (context) => Dialog(
+        backgroundColor: AppColors.primaryBlue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.cyan.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Edit $fieldTitle',
+                style: const TextStyle(
+                  color: AppColors.cyan,
+                  fontFamily: 'PolySans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.whiteWithOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.whiteWithOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: TextField(
+                  controller: textController,
+                  autofocus: true,
+                  maxLines: fieldName == 'notes' ? 5 : (isMultiValue ? 3 : 1),
+                  style: const TextStyle(
+                    color: AppColors.cyan,
+                    fontFamily: 'PolySans',
+                    fontSize: 16,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    hintStyle: const TextStyle(
+                      color: AppColors.lightBlue,
+                      fontFamily: 'PolySans',
+                      fontSize: 16,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: Material(
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () {
+                      final newValue = textController.text.trim();
+                      if (newValue.isNotEmpty) {
+                        controller.updateField(fieldName, newValue);
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            AppColors.lightBlue,
+                            AppColors.cyan,
+                          ],
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        'Save',
+                        style: TextStyle(
+                          color: AppColors.primaryBlue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'PolySans',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: AppColors.cyan,
+                    fontFamily: 'PolySans',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              final newValue = textController.text.trim();
-              if (newValue.isNotEmpty) {
-                controller.updateField(fieldName, newValue);
-              }
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
   }

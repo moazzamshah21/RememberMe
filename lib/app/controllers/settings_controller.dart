@@ -189,75 +189,95 @@ class SettingsController extends GetxController {
   // Show subscription popup for export data feature
   void _showExportSubscriptionPopup() {
     Get.dialog(
-      AlertDialog(
+      Dialog(
+        backgroundColor: AppColors.primaryBlue,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: Row(
-          children: [
-            Icon(
-              Icons.info_outline,
-              color: AppColors.primaryTeal,
-              size: 28,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.cyan.withValues(alpha: 0.3),
+              width: 1,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
                 'Subscription Required',
                 style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primaryBlue,
+                  color: AppColors.cyan,
+                  fontFamily: 'PolySans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                'Export Data is a premium feature. Subscribe to any plan (Pro, Premium, or Platinum) to export your contacts.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
                   fontFamily: 'PolySans',
                 ),
               ),
-            ),
-          ],
-        ),
-        content: Text(
-          'Export Data is a premium feature. Subscribe to any plan (Pro, Premium, or Platinum) to export your contacts.',
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.mediumGray,
-            fontFamily: 'PolySans',
-            height: 1.5,
+              const SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: Material(
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            AppColors.lightBlue,
+                            AppColors.cyan,
+                          ],
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        'View Plans',
+                        style: TextStyle(
+                          color: AppColors.primaryBlue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'PolySans',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: AppColors.cyan,
+                    fontFamily: 'PolySans',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.mediumGray,
-                fontFamily: 'PolySans',
-                fontSize: 16,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back(); // Close the dialog
-              // The user is already on the Settings screen, so they can see the plans below
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryTeal,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: Text(
-              'View Plans',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'PolySans',
-              ),
-            ),
-          ),
-        ],
       ),
       barrierDismissible: true,
     );
@@ -502,15 +522,80 @@ class SettingsController extends GetxController {
   void handleAbout() {
     // Show about dialog
     Get.dialog(
-      AlertDialog(
-        title: const Text('About Remember Me'),
-        content: const Text('Version 1.0.0\n\nThe Smart Way to Remember People.'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('OK'),
+      Dialog(
+        backgroundColor: AppColors.primaryBlue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.cyan.withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'About Remember Me',
+                style: TextStyle(
+                  color: AppColors.cyan,
+                  fontFamily: 'PolySans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                'Version 1.0.0\n\nThe Smart Way to Remember People.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontFamily: 'PolySans',
+                ),
+              ),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: Material(
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            AppColors.lightBlue,
+                            AppColors.cyan,
+                          ],
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(
+                          color: AppColors.primaryBlue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'PolySans',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       barrierDismissible: true,
     );
